@@ -36,6 +36,7 @@ rowcount
 # Home or away
 # Strong foot or not
 # First time shot or not
+# Ball rebound from goalkeeper or not (then the keeper is probably lying on the ground)
 
 # Compare this to xG from StatsBomb
 # Train, validate and test on 30% and evaluate if classifier is correct (with confusion matrix, AUC, etc.)
@@ -43,3 +44,4 @@ rowcount
 # Maybe we should train separate models for players to get more accurate predictions
 # Plot some shots that should have been scored and some that had little chance but still went in
 # Try out different ML models for this and compare
+# Deal with freekicks and penalties
