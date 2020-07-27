@@ -28,6 +28,8 @@ for (i in rownames(goals)) {
 }
 
 
+shots_df <- match_df %>% filter(match_df$type$id == 16)
+shots_df_flat <- match_df_flat %>% filter(match_df_flat$type.id == 16)
 
 
 

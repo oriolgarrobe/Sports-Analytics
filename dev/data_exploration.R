@@ -194,7 +194,7 @@ plot_pitch <- function(active_player, passive_players){
   # add passive player locations
   points(passive_players, col = "red", pch = 20)
 }
-plot_pitch()
+#plot_pitch()
 
 ##########################################################################
 # season stats for Barcelona
