@@ -37,6 +37,7 @@ rowcount
 # Strong foot or not
 # First time shot or not
 # Ball rebound from goalkeeper or not (then the keeper is probably lying on the ground)
+# Deflected
 
 # Compare this to xG from StatsBomb
 # Train, validate and test on 30% and evaluate if classifier is correct (with confusion matrix, AUC, etc.)

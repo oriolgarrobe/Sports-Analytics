@@ -47,7 +47,50 @@ for (season in season_ids$season_id) {
 }
 #shots = 7225
 
+# check if all non-penalty shots have freeze frame
 
+# combine all matches into one and filter shots
+
+match_df2_flat <- fromJSON('data/events/9827.json', flatten = T) #1 FK, 1 penalty goal
+laspalmas = match_df2_flat %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
+                                                                                                                       shot.freeze_frame,
+                                                                                                                       shot.type.name)
+     #%>% select(shot.freeze_frame, shot.outcome.name, shot.type.name)
+
+realmadrid = match_df_flat %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
+                                                                                                                       shot.freeze_frame,
+                                                                                                                       shot.type.name)
+
+#merge 2 matches
+merged = rbind(laspalmas, realmadrid) # NICE
+
+# now merge all matches
+shots = data.frame()
+counter = 0
+season_ids = competitions %>% filter(competition_id==11) %>% select(season_id)
+for (season in season_ids$season_id) {
+  current_season <- fromJSON(paste0('data/matches/11/',season,'.json'))
+  match_ids <- current_season %>% select(match_id)
+  for (match in match_ids$match_id) {
+    current_match <- fromJSON(paste0('data/events/',match,'.json'), flatten = T)
+    filtered = current_match %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
+                                                                                                               shot.freeze_frame,
+                                                                                                               shot.type.name)
+    if (counter == 0) {
+      shots = filtered
+    } else {
+      shots = rbind(shots, filtered)
+    }
+    counter = counter + 1
+  }
+}
+
+
+
+View(match_df_flat
+     %>% dplyr::filter(team.name=='Barcelona')
+     %>% dplyr::filter(length(unlist(shot.freeze_frame)>0))
+     %>% select(shot.freeze_frame, shot.outcome.name, shot.type.name))
 
                             
 ############### NOTES ###############
