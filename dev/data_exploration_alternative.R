@@ -75,7 +75,8 @@ for (season in season_ids$season_id) {
   match_ids <- current_season %>% select(match_id)
   for (match in match_ids$match_id) {
     current_match <- fromJSON(paste0('data/events/',match,'.json'), flatten = T)
-    filtered = current_match %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
+    filtered = current_match %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(location,
+                                                                                                               shot.outcome.name,
                                                                                                                shot.freeze_frame,
                                                                                                                shot.type.name)
     if (counter == 0) {
@@ -88,13 +89,67 @@ for (season in season_ids$season_id) {
 }
 
 
+non_penalty_shots = filter(shots, shot.type.name != 'Penalty') #7126
+open_play_shots = filter(shots, shot.type.name == 'Open Play') #6485
 
-View(match_df_flat
-     %>% dplyr::filter(team.name=='Barcelona')
-     %>% dplyr::filter(length(unlist(shot.freeze_frame)>0))
-     %>% select(shot.freeze_frame, shot.outcome.name, shot.type.name))
 
+nrow(filter(open_play_shots, shot.outcome.name == 'Goal')) # 1056 goals
+
+# SHOTS
+# check if this runs -> freeze frame is filled in
+counter = 0
+for (i in 1:nrow(shots)) {
+  if (!is.numeric(shots$shot.freeze_frame[[i]]$location[[1]])) {
+    counter = counter + 1
+    print(paste('freeze frame missing: ',i))
+  } 
+}
+counter # 80 missing, but there are 99 penalties
+
+# NON PENALTY SHOTS
+# check if this runs -> freeze frame is filled in
+counter = 0
+for (i in 1:nrow(non_penalty_shots)) {
+  if (!is.numeric(non_penalty_shots$shot.freeze_frame[[i]]$location[[1]])) {
+    counter = counter + 1
+    print(paste('freeze frame missing: ',i))
+  } 
+}
+counter # 0 missing, GOOD NEWS!!
                             
+
+
+
+############## PLOT SOME INTERESTING SHOTS #################
+
+# corner
+
+active_player = shots[[7026,'location']]
+passive_players = shots[[7026, 'shot.freeze_frame']]
+teammate = shots[[7026, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = 'corner')
+
+# penalty
+
+active_player = shots[[6652,'location']]
+passive_players = shots[[6652, 'shot.freeze_frame']]
+teammate = shots[[6652, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = 'penalty')
+
+# free kick
+
+active_player = shots[[1,'location']]
+passive_players = shots[[1, 'shot.freeze_frame']]
+teammate = shots[[1, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = 'free kick')
+
+# random open play
+
+active_player = shots[[4,'location']]
+passive_players = shots[[4, 'shot.freeze_frame']]
+teammate = shots[[4, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = 'open play')
+
 ############### NOTES ###############
 
 # if you use fromJSON(..., flatten = T), then you can reference the fields with a dot (.)
@@ -104,3 +159,9 @@ View(match_df_flat
 # pitch coordinates are from the perspective of the attacking team -> it can change depending on which team the event belongs to
 
 # Total shots by Barcelona (all seasons) = 7225
+# Total non-penalty shots by Barcelona (all seasons) = 7126
+# Total open play shots by Barcelona (all seasons) = 6485
+# Total goals from open play by Barcelona (all seasons) = 1056
+
+# Every non-penalty shot has a freeze frame
+# Some (19) penalty shots also have a freeze frame (out of 99), but that only contains the keeper's position
