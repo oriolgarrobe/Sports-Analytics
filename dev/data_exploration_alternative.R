@@ -170,3 +170,30 @@ plot_pitch(active_player, passive_players, main = 'open play')
 
 # Every non-penalty shot has a freeze frame
 # Some (19) penalty shots also have a freeze frame (out of 99), but that only contains the keeper's position
+
+
+# Variables
+
+# Used
+
+# shot.outcome.name,
+# shot.freeze_frame,
+# shot.type.name,
+# player.name,
+# location,
+# under_pressure,
+# shot.statsbomb_xg,
+# shot.body_part.name
+
+# Could be relevant
+# Goalkeeper positioning
+# Goalkeeper rating (from FIFA game?)
+# Angle of the shot
+# Shooting distance
+# Number of players between shooter and goal
+# Opposition players proximity to shooter
+# Shooter under pressure or not (similar to previous one)
+# Shooter's rating (from FIFA game?)
+# Home or away
+# Strong foot or not
+# First time shot or not
