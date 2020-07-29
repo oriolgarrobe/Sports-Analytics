@@ -150,6 +150,34 @@ passive_players = shots[[4, 'shot.freeze_frame']]
 teammate = shots[[4, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'open play')
 
+
+
+################################# CHECK HOW OWN GOALS ARE RECORDED #####################################x
+
+# own goals by barcelona
+
+# Mathieu, 2016.03.20. vs Villareal, competition id = 11, season id = 27, match id = 266106
+
+villareal <- fromJSON('data/events/266106.json', flatten = T)
+villareal_shots = villareal %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
+                                                                        shot.freeze_frame,
+                                                                        shot.type.name,
+                                                                        team.name,
+                                                                        player.name,
+                                                                        minute)
+
+# Mathieu's own goal is not recorded as a shot, but as an Own Goal event:
+
+owngoal = villareal %>% dplyr::filter(type.name=='Own Goal Against') %>% select(shot.outcome.name,
+                                                                           shot.freeze_frame,
+                                                                           shot.type.name,
+                                                                           team.name,
+                                                                           player.name,
+                                                                           minute)
+
+
+
+
 ############### NOTES ###############
 
 # if you use fromJSON(..., flatten = T), then you can reference the fields with a dot (.)
