@@ -8,6 +8,10 @@ plot_pitch <- function(active_player, passive_players, main = 'Plot'){
   plot(120,80, xlim=c(0,120), ylim = rev(c(0,80)), ylab = '', xlab = '', main = main)
   abline(v=c(120, 60),  h = 80)
   
+  # draw goalposts
+  points(120,36, pch = 3)
+  points(120,44, pch = 3)
+  
   # add active player location
   points(active_player[1], active_player[2], col = "blue", pch = 8)
   

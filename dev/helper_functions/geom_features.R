@@ -1,4 +1,6 @@
 geom_features <- function(active_player, passive_players){
+  ### Calculates geometric features for a shot
+  
   # INPUTS
   # active player = vector of 2 coordinates (x,y)
   # passive players = freeze frame dataframe
@@ -31,9 +33,25 @@ geom_features <- function(active_player, passive_players){
   # angle
   angle = angle(goalline, dist_goalpost1, dist_goalpost2)
   
+  # obstacles
+  obstacles = 0
+  # find players that can block the shot by being inside the triangle
+  for (i in 1:nrow(passive_players)) {
+    loc = unlist(passive_players[['location']][i])
+    is_in_triangle = is_in_triangle(goalpost1, goalpost2, active_player, loc)
+    if (is_in_triangle) {
+      obstacles = obstacles + 1
+       # print(passive_players[['position.name']][i])
+       # print(passive_players[['location']][i])
+       # print(passive_players[['teammate']][i])
+    }
+  }
+  
+  
   # put results into a list
   result = list(dist = dist,
-                angle = angle)
+                angle = angle,
+                obstacles = obstacles)
   
   # return list
   return(result)
@@ -41,7 +59,7 @@ geom_features <- function(active_player, passive_players){
 
 # test
 #active_player = shots[[4,'location']]
-active_player = c(110,10)
+active_player = c(100,65)
 passive_players = shots[[4, 'shot.freeze_frame']]
 teammate = shots[[4, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'open play')

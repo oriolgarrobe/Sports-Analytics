@@ -8,6 +8,9 @@ angle <- function(a, b, c){
   # OUTPUTS
   # angle = angle in degrees
   
+  # Source
+  # https://www.omnicalculator.com/math/triangle-angle#how-to-find-the-angle-of-a-triangle
+  
   angle_rad = acos((b^2 + c^2 - a^2) / (2*b*c))
   angle_deg = angle_rad * 180 / pi
   
