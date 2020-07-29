@@ -1,7 +1,7 @@
 library(jsonlite)
 library(tidyverse)
 
-competitions <- fromJSON('data/competitions.json')
+ competitions <- fromJSON('data/competitions.json')
 
 ##############################################################################################
 # Barcelona - Real Madrid
@@ -56,7 +56,12 @@ for (season in season_ids$season_id) {
 match_df2_flat <- fromJSON('data/events/9827.json', flatten = T) #1 FK, 1 penalty goal
 laspalmas = match_df2_flat %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
                                                                                                                        shot.freeze_frame,
-                                                                                                                       shot.type.name)
+                                                                                                                       shot.type.name,
+                                                                                                                       player.name,
+                                                                                                                       location,
+                                                                                                                       under_pressure,
+                                                                                                                       shot.statsbomb_xg,
+                                                                                                                       shot.body_part.name)
      #%>% select(shot.freeze_frame, shot.outcome.name, shot.type.name)
 
 realmadrid = match_df_flat %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
