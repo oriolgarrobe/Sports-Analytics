@@ -66,7 +66,12 @@ laspalmas = match_df2_flat %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::
 
 realmadrid = match_df_flat %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
                                                                                                                        shot.freeze_frame,
-                                                                                                                       shot.type.name)
+                                                                                                                       shot.type.name,
+                                                                                                                       shot.statsbomb_xg,
+                                                                                                                       team.name,
+                                                                                                                       player.name,
+                                                                                                                       location,
+                                                                                                                       minute)
 
 #merge 2 matches
 merged = rbind(laspalmas, realmadrid) # NICE
@@ -181,6 +186,195 @@ owngoal = villareal %>% dplyr::filter(type.name=='Own Goal Against') %>% select(
                                                                            minute)
 
 
+################################# Plot shots to figure out pitch orientation ######################################
+
+####### AWAY
+## Real Madrid - Barcelona (2017.12.23)
+
+realmadrid = match_df_flat %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
+                                                                                                                       shot.freeze_frame,
+                                                                                                                       shot.type.name,
+                                                                                                                       shot.statsbomb_xg,
+                                                                                                                       team.name,
+                                                                                                                       player.name,
+                                                                                                                       location,
+                                                                                                                       minute)
+# attacking to the left (1st half)
+id = 1
+
+active_player = realmadrid[[id,'location']]
+passive_players = realmadrid[[id, 'shot.freeze_frame']]
+teammate = realmadrid[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+id = 3
+  
+active_player = realmadrid[[id,'location']]
+passive_players = realmadrid[[id, 'shot.freeze_frame']]
+teammate = realmadrid[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+
+
+# attacking to the right (2nd half)
+
+id = 6
+
+active_player = realmadrid[[id,'location']]
+passive_players = realmadrid[[id, 'shot.freeze_frame']]
+teammate = realmadrid[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+
+id = 18
+
+active_player = realmadrid[[id,'location']]
+passive_players = realmadrid[[id, 'shot.freeze_frame']]
+teammate = realmadrid[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+
+### HOME
+## Barcelona - Real Madrid 5-0 (2010.11.29)
+#https://www.youtube.com/watch?v=Jeiu7y-a220
+
+realmadrid_home <- fromJSON('data/events/69299.json', flatten = T)
+
+realmadrid_home = realmadrid_home %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
+                                                                                                                       shot.freeze_frame,
+                                                                                                                       shot.type.name,
+                                                                                                                       shot.statsbomb_xg,
+                                                                                                                       team.name,
+                                                                                                                       player.name,
+                                                                                                                       location,
+                                                                                                                       minute)
+
+
+# attacking to the right (1st half)
+id = 4
+
+active_player = realmadrid_home[[id,'location']]
+passive_players = realmadrid_home[[id, 'shot.freeze_frame']]
+teammate = realmadrid_home[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid_home[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+id = 5
+
+active_player = realmadrid_home[[id,'location']]
+passive_players = realmadrid_home[[id, 'shot.freeze_frame']]
+teammate = realmadrid_home[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid_home[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+
+
+# attacking to the left (2nd half)
+id = 10
+
+active_player = realmadrid_home[[id,'location']]
+passive_players = realmadrid_home[[id, 'shot.freeze_frame']]
+teammate = realmadrid_home[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid_home[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+
+id = 11
+
+active_player = realmadrid_home[[id,'location']]
+passive_players = realmadrid_home[[id, 'shot.freeze_frame']]
+teammate = realmadrid_home[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid_home[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+id = 14
+
+active_player = realmadrid_home[[id,'location']]
+passive_players = realmadrid_home[[id, 'shot.freeze_frame']]
+teammate = realmadrid_home[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid_home[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+
+### random match 1
+## Barcelona - Betis 5-1 2006.02.18. (2 Betis own goals)
+#https://www.youtube.com/watch?v=UhTt1DPlTgc
+#https://int.soccerway.com/matches/2006/02/18/spain/primera-division/futbol-club-barcelona/real-betis/280858/
+
+betis <- fromJSON('data/events/69172.json', flatten = T)
+
+betis = betis %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
+                                                                                                                              shot.freeze_frame,
+                                                                                                                              shot.type.name,
+                                                                                                                              shot.statsbomb_xg,
+                                                                                                                              team.name,
+                                                                                                                              player.name,
+                                                                                                                              location,
+                                                                                                                              minute)
+
+
+# attacking to the right (1st half)
+id = 2
+
+active_player = betis[[id,'location']]
+passive_players = betis[[id, 'shot.freeze_frame']]
+teammate = betis[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', betis[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+# attacking to the left (2nd half)
+id = 11
+
+active_player = betis[[id,'location']]
+passive_players = betis[[id, 'shot.freeze_frame']]
+teammate = betis[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', betis[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+
+
+
+
+
+### random match 2
+# Sevilla - Barcelona 1-4, 2014-02-09
+# https://www.youtube.com/watch?v=jrBWJAD9Kc0
+#https://www.fcbarcelona.com/en/matches/34477/sevilla-fc-barcelona-la-liga-2013-2014
+
+sevilla <- fromJSON('data/events/267675.json', flatten = T)
+
+sevilla = sevilla %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
+                                                                                                          shot.freeze_frame,
+                                                                                                          shot.type.name,
+                                                                                                          shot.statsbomb_xg,
+                                                                                                          team.name,
+                                                                                                          player.name,
+                                                                                                          location,
+                                                                                                          minute)
+
+# attacking to the right (1st half)
+id = 2
+
+active_player = sevilla[[id,'location']]
+passive_players = sevilla[[id, 'shot.freeze_frame']]
+teammate = sevilla[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', sevilla[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+# attacking to the left (2nd half)
+id = 5
+
+active_player = sevilla[[id,'location']]
+passive_players = sevilla[[id, 'shot.freeze_frame']]
+teammate = sevilla[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', sevilla[[id, 'shot.statsbomb_xg']]))
+# attack is plotted to the right
+
+##############################################################################################
 
 
 ############### NOTES ###############
@@ -199,6 +393,7 @@ owngoal = villareal %>% dplyr::filter(type.name=='Own Goal Against') %>% select(
 # Every non-penalty shot has a freeze frame
 # Some (19) penalty shots also have a freeze frame (out of 99), but that only contains the keeper's position
 
+# Barcelona always seem to attack to right regardsless of home - away or 1st - 2nd half
 
 # Variables
 
