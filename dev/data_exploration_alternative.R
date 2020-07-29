@@ -1,7 +1,7 @@
 library(jsonlite)
 library(tidyverse)
 
-competitions <- fromJSON('data/competitions.json')
+ competitions <- fromJSON('data/competitions.json')
 
 ##############################################################################################
 # Barcelona - Real Madrid
@@ -56,7 +56,12 @@ for (season in season_ids$season_id) {
 match_df2_flat <- fromJSON('data/events/9827.json', flatten = T) #1 FK, 1 penalty goal
 laspalmas = match_df2_flat %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
                                                                                                                        shot.freeze_frame,
-                                                                                                                       shot.type.name)
+                                                                                                                       shot.type.name,
+                                                                                                                       player.name,
+                                                                                                                       location,
+                                                                                                                       under_pressure,
+                                                                                                                       shot.statsbomb_xg,
+                                                                                                                       shot.body_part.name)
      #%>% select(shot.freeze_frame, shot.outcome.name, shot.type.name)
 
 realmadrid = match_df_flat %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
@@ -193,3 +198,30 @@ owngoal = villareal %>% dplyr::filter(type.name=='Own Goal Against') %>% select(
 
 # Every non-penalty shot has a freeze frame
 # Some (19) penalty shots also have a freeze frame (out of 99), but that only contains the keeper's position
+
+
+# Variables
+
+# Used
+
+# shot.outcome.name,
+# shot.freeze_frame,
+# shot.type.name,
+# player.name,
+# location,
+# under_pressure,
+# shot.statsbomb_xg,
+# shot.body_part.name
+
+# Could be relevant
+# Goalkeeper positioning
+# Goalkeeper rating (from FIFA game?)
+# Angle of the shot
+# Shooting distance
+# Number of players between shooter and goal
+# Opposition players proximity to shooter
+# Shooter under pressure or not (similar to previous one)
+# Shooter's rating (from FIFA game?)
+# Home or away
+# Strong foot or not
+# First time shot or not
