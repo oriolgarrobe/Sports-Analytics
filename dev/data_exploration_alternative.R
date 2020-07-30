@@ -138,6 +138,7 @@ active_player = shots[[7026,'location']]
 passive_players = shots[[7026, 'shot.freeze_frame']]
 teammate = shots[[7026, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'corner')
+geom_features(active_player, passive_players)
 
 # penalty
 
@@ -145,6 +146,7 @@ active_player = shots[[6652,'location']]
 passive_players = shots[[6652, 'shot.freeze_frame']]
 teammate = shots[[6652, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'penalty')
+geom_features(active_player, passive_players)
 
 # free kick
 
@@ -152,6 +154,7 @@ active_player = shots[[1,'location']]
 passive_players = shots[[1, 'shot.freeze_frame']]
 teammate = shots[[1, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'free kick')
+geom_features(active_player, passive_players)
 
 # random open play
 
@@ -159,7 +162,7 @@ active_player = shots[[4,'location']]
 passive_players = shots[[4, 'shot.freeze_frame']]
 teammate = shots[[4, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'open play')
-
+geom_features(active_player, passive_players)
 
 
 ################################# CHECK HOW OWN GOALS ARE RECORDED #####################################x

@@ -7,14 +7,14 @@ geom_features <- function(active_player, passive_players){
   
   # OUTPUTS
   # dist = distance to center of the goal from shot taker (not metre!!!)
-  # angle = angle of the goal from the from shot taker
-  # obstacles = number of players (teammates & opponents including GK)
+  # angle = angle of the goal from the from shot taker (in degrees)
+  # obstacles = number of players (teammates & opponents NOT including GK)
   #             between goal and shot taker (inside the triangle of the goalposts and the shot taker)
   # pressure_prox = closest opponent's proximity to the shot taker
-  # pressure_pos = closest opponent's position compared to the shot taker and goal 
-  #                (can he block the shot?) (value between 0 (outside the triangle) to 1 (on the line between shot taker and center of goal))
+  # pressure_block = Boolean, can the closest opponent block the shot by being inside the triangle
+  # gk_obstacle = Boolean, can the goalkeeper save the shot by being inside the triangle
   # gk_pos = goalkeeper's positioning, best if gk is standing on the line connecting shot taker to center of the goal
-  #          (value between 0 (far from the line) to 1 (on the line))
+  #          (meaning that he halves the angle of the shot, value between 0 (angle is the same), to 1 (angle is halved))
   
   # NOTES
   # center of the goal = [120,40]
@@ -33,25 +33,56 @@ geom_features <- function(active_player, passive_players){
   # angle
   angle = angle(goalline, dist_goalpost1, dist_goalpost2)
   
-  # obstacles
+  # obstacles and pressure
   obstacles = 0
-  # find players that can block the shot by being inside the triangle
+  pressure_prox = 1000 # arbitrary large value
+  pressure_block = 1000 # arbitrary large value
+  gk_obstacle = FALSE
+  # find players that apply pressure or can block the shot by being inside the triangle
   for (i in 1:nrow(passive_players)) {
     loc = unlist(passive_players[['location']][i])
     is_in_triangle = is_in_triangle(goalpost1, goalpost2, active_player, loc)
     if (is_in_triangle) {
-      obstacles = obstacles + 1
+      if (passive_players[['position.name']][i] == 'Goalkeeper') {
+        gk_obstacle = TRUE
+      } else {
+        obstacles = obstacles + 1
+      }
        # print(passive_players[['position.name']][i])
        # print(passive_players[['location']][i])
        # print(passive_players[['teammate']][i])
     }
+    # find closest opponent player to shot taker
+    if (!passive_players[['teammate']][i]) {
+      d = distance(loc, active_player)
+      if (d < pressure_prox) {
+        pressure_prox <- d
+        # if pressure is inside the triangle, he can block the shot
+        if (is_in_triangle) {
+          pressure_block <- TRUE
+        } else {
+          pressure_block <- FALSE
+        }
+      }
+    }
+
   }
-  
+  # set pressure_prox to NULL if there were no players in freeze frame
+  if (pressure_prox == 1000) {
+    pressure_prox <- NULL
+  }
+  # set pressure_block to NULL if there were no players in freeze frame
+  if (pressure_block == 1000) {
+    pressure_block <- NULL
+  }
   
   # put results into a list
   result = list(dist = dist,
                 angle = angle,
-                obstacles = obstacles)
+                obstacles = obstacles,
+                pressure_prox = pressure_prox,
+                pressure_block = pressure_block,
+                gk_obstacle = gk_obstacle)
   
   # return list
   return(result)
@@ -59,7 +90,7 @@ geom_features <- function(active_player, passive_players){
 
 # test
 #active_player = shots[[4,'location']]
-active_player = c(100,65)
+active_player = c(106,41.9)
 passive_players = shots[[4, 'shot.freeze_frame']]
 teammate = shots[[4, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'open play')
