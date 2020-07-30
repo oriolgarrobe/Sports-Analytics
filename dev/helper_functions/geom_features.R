@@ -76,13 +76,35 @@ geom_features <- function(active_player, passive_players){
     pressure_block <- NULL
   }
   
+  # gk_pos
+  split_angle = NULL
+  # only relevant, if gk is in the triangle
+  if (gk_obstacle) {
+    # get goalkeeper location and distance to upper goalpost (goalpost1)
+    gk = filter(passive_players, position.name == 'Goalkeeper' & !teammate)
+    gk_loc = unlist(gk$location)
+    gk_to_post1 = distance(gk_loc, goalpost1)
+    # calculate angle of shot between keeper and upper goalpost
+    split_angle = angle(gk_to_post1, dist_goalpost1, distance(gk_loc, active_player))
+    # get gaussian kernel value for split
+    gk_pos = gauss_kernel(split_angle, angle)
+    gk_pos_adjusted = gauss_kernel_adjusted(split_angle, angle)
+  } else {
+    # if keeper is not in triangle, he is not splitting the angle of the shot
+    gk_pos = 0
+    gk_pos_adjusted = 0
+  }
+  
   # put results into a list
   result = list(dist = dist,
                 angle = angle,
                 obstacles = obstacles,
                 pressure_prox = pressure_prox,
                 pressure_block = pressure_block,
-                gk_obstacle = gk_obstacle)
+                gk_obstacle = gk_obstacle,
+                gk_pos = gk_pos,
+                gk_pos_adjusted = gk_pos_adjusted,
+                split_angle = split_angle)
   
   # return list
   return(result)
@@ -90,7 +112,7 @@ geom_features <- function(active_player, passive_players){
 
 # test
 #active_player = shots[[4,'location']]
-active_player = c(106,41.9)
+active_player = c(115,50)
 passive_players = shots[[4, 'shot.freeze_frame']]
 teammate = shots[[4, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'open play')
@@ -98,5 +120,22 @@ plot_pitch(active_player, passive_players, main = 'open play')
 geom_features(active_player, passive_players)
 
 
+######## keeper out
+active_player = c(105,45)
+passive_players = realmadrid[[6, 'shot.freeze_frame']]
+teammate = realmadrid[[6, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid[[6, 'shot.statsbomb_xg']]))
 
+geom_features(active_player, passive_players)
+
+
+######## tight angle, keeper on the line
+id = 3
+
+active_player = c(110,30)
+passive_players = realmadrid[[id, 'shot.freeze_frame']]
+teammate = realmadrid[[id, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid[[id, 'shot.statsbomb_xg']]))
+
+geom_features(active_player, passive_players)
 

@@ -21,12 +21,14 @@ plot_pitch <- function(active_player, passive_players, main = 'Plot'){
   } else {
     for (i in 1:nrow(passive_players)) {
       if (passive_players[['position.name']][i] == 'Goalkeeper') {
-        points(passive_players[[i,1]][1],passive_players[[i,1]][2], col = "red", pch = 15)
+        points(passive_players[[i,1]][1],passive_players[[i,1]][2], col = "red", pch = 4)
       }
       if (passive_players[['teammate']][i]) {
         points(passive_players[[i,1]][1], passive_players[[i,1]][2], col = "blue", pch = 20)
       } else {
-        points(passive_players[[i,1]][1],passive_players[[i,1]][2], col = "red", pch = 20)
+        if (passive_players[['position.name']][i] != 'Goalkeeper') {
+          points(passive_players[[i,1]][1],passive_players[[i,1]][2], col = "red", pch = 20)
+        }
       }
     }
   }
