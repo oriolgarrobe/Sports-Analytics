@@ -36,15 +36,26 @@ shots_df_flat <- match_df_flat %>% filter(match_df_flat$type.id == 16)
 ##############################################################################################
 
 # all Barcelona matches (= all La Liga matches, competition_id = 11)
-shots = 0
+shots_no = 0
 season_ids = competitions %>% filter(competition_id==11) %>% select(season_id)
 for (season in season_ids$season_id) {
   current_season <- fromJSON(paste0('data/matches/11/',season,'.json'))
   match_ids <- current_season %>% select(match_id)
+  # check if it is Barca match
+  for (i in 1:nrow(current_season)) {
+    if (current_season[i,]$home_team$home_team_name != 'Barcelona' && current_season[i,]$away_team$away_team_name != 'Barcelona') {
+      print(current_season[i,]$match_id)
+      print(current_season[i,]$home_team$home_team_name)
+      print(current_season[i,]$away_team$away_team_name)
+    }
+  }
+
   for (match in match_ids$match_id) {
     current_match <- fromJSON(paste0('data/events/',match,'.json'), flatten = T)
-    shots = shots + nrow(filter(current_match, type.name == 'Shot' & team.name == 'Barcelona'))
-    print(shots)
+    shots_no = shots_no + nrow(filter(current_match, type.name == 'Shot' & team.name == 'Barcelona'))
+    print(shots_no)
+
+    
   }
 }
 #shots = 7225
@@ -138,6 +149,7 @@ active_player = shots[[7026,'location']]
 passive_players = shots[[7026, 'shot.freeze_frame']]
 teammate = shots[[7026, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'corner')
+geom_features(active_player, passive_players)
 
 # penalty
 
@@ -145,6 +157,7 @@ active_player = shots[[6652,'location']]
 passive_players = shots[[6652, 'shot.freeze_frame']]
 teammate = shots[[6652, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'penalty')
+geom_features(active_player, passive_players)
 
 # free kick
 
@@ -152,6 +165,7 @@ active_player = shots[[1,'location']]
 passive_players = shots[[1, 'shot.freeze_frame']]
 teammate = shots[[1, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'free kick')
+geom_features(active_player, passive_players)
 
 # random open play
 
@@ -159,7 +173,7 @@ active_player = shots[[4,'location']]
 passive_players = shots[[4, 'shot.freeze_frame']]
 teammate = shots[[4, 'shot.freeze_frame']]$teammate
 plot_pitch(active_player, passive_players, main = 'open play')
-
+geom_features(active_player, passive_players)
 
 
 ################################# CHECK HOW OWN GOALS ARE RECORDED #####################################x
