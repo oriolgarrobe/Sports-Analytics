@@ -13,8 +13,11 @@ geom_features <- function(active_player, passive_players){
   # pressure_prox = closest opponent's proximity to the shot taker
   # pressure_block = Boolean, can the closest opponent block the shot by being inside the triangle
   # gk_obstacle = Boolean, can the goalkeeper save the shot by being inside the triangle
-  # gk_pos = goalkeeper's positioning, best if gk is standing on the line connecting shot taker to center of the goal
-  #          (meaning that he halves the angle of the shot, value between 0 (angle is the same), to 1 (angle is halved))
+  # gk_pos = goalkeeper's positioning, best if gk is standing on the line that halves the angle of the shot
+  #          (value between 0 (angle is the same), to 1 (angle is halved))
+  # gk_pos_adjusted = same as gk_pos, but it is less strict with shots with a tight angle
+  # gk_dist_from_player = distance between goalkeeper and shot taker
+  # gk_dist_from_goal = distance between goalkeeper and the center of the goal
   
   # NOTES
   # center of the goal = [120,40]
@@ -77,23 +80,30 @@ geom_features <- function(active_player, passive_players){
   }
   
   # gk_pos
-  split_angle = NULL
+  # get goalkeeper location
+  gk = filter(passive_players, position.name == 'Goalkeeper' & !teammate)
+  gk_loc = unlist(gk$location)
   # only relevant, if gk is in the triangle
   if (gk_obstacle) {
-    # get goalkeeper location and distance to upper goalpost (goalpost1)
-    gk = filter(passive_players, position.name == 'Goalkeeper' & !teammate)
-    gk_loc = unlist(gk$location)
+    # get distance to upper goalpost (goalpost1)
     gk_to_post1 = distance(gk_loc, goalpost1)
     # calculate angle of shot between keeper and upper goalpost
     split_angle = angle(gk_to_post1, dist_goalpost1, distance(gk_loc, active_player))
     # get gaussian kernel value for split
     gk_pos = gauss_kernel(split_angle, angle)
-    gk_pos_adjusted = gauss_kernel_adjusted(split_angle, angle)
+    gk_pos_adjusted = gauss_kernel(split_angle, angle, adjusted = T)
   } else {
     # if keeper is not in triangle, he is not splitting the angle of the shot
     gk_pos = 0
     gk_pos_adjusted = 0
+    split_angle = 0
   }
+  
+  # gk_dist_from_player
+  gk_dist_from_player = distance(gk_loc, active_player)
+  
+  # gk_dist_from_goal
+  gk_dist_from_goal = distance(gk_loc, goal)
   
   # put results into a list
   result = list(dist = dist,
@@ -104,7 +114,10 @@ geom_features <- function(active_player, passive_players){
                 gk_obstacle = gk_obstacle,
                 gk_pos = gk_pos,
                 gk_pos_adjusted = gk_pos_adjusted,
-                split_angle = split_angle)
+                split_angle = split_angle, # remove this at the end
+                gk_dist_from_player = gk_dist_from_player,
+                gk_dist_from_goal = gk_dist_from_goal
+                )
   
   # return list
   return(result)
