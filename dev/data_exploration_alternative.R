@@ -11,8 +11,10 @@ library(tidyverse)
 # https://www.youtube.com/watch?v=RTKb97wltyo&t=94s
 
 match_df <- fromJSON('data/events/9736.json')
-match_df_flat <- fromJSON('data/events/9736.json', flatten = T)
+match_df_flat2 <- fromJSON('data/events/9736.json', flatten = T)
 
+
+shot_realmadrid_flat = filter(match_df_flat, type.name == 'Shot')
 goals = match_df %>% filter(match_df$shot$outcome$name == 'Goal')
 goals_flat = match_df_flat %>% filter(match_df_flat$shot.outcome.name == 'Goal')
 cards = match_df %>% filter(match_df$foul_committed$card$name %in% c('Yellow Card', 'Red Card') |
