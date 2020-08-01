@@ -99,14 +99,20 @@ geom_features <- function(active_player, passive_players){
     split_angle = 0
   }
   
-  # gk_dist_from_player
-  gk_dist_from_player = distance(gk_loc, active_player)
+  # gk_dist_from_player, gk_dist_from_goal
+  # only if gk has a location (is in the freeze frame)
+  if (!is.null(gk_loc)) {
+    gk_dist_from_player = distance(gk_loc, active_player)
+    gk_dist_from_goal = distance(gk_loc, goal)
+  } else {
+    # if GK is not in freeze frame, assume that he is 5 "meters" behind shooter
+    gk_dist_from_player = 5
+    gk_dist_from_goal = dist + 5
+  }
+
   
-  # gk_dist_from_goal
-  gk_dist_from_goal = distance(gk_loc, goal)
-  
-  # put results into a list
-  result = list(dist = dist,
+  # put results into a data frame
+  result = data.frame(dist = dist,
                 angle = angle,
                 obstacles = obstacles,
                 pressure_prox = pressure_prox,
@@ -164,3 +170,23 @@ plot_pitch(active_player, passive_players, main = paste0('xG: ', osa[[1, 'shot.s
 
 geom_features(active_player, passive_players)
 
+
+######## error
+er = shots[6467,]
+active_player = unlist(er$location)
+passive_players = er[[1, 'shot.freeze_frame']]
+teammate = er[[1, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', er[[1, 'shot.statsbomb_xg']]))
+
+geom_features(active_player, passive_players)
+
+
+
+######## check
+er = shots[6471,]
+active_player = unlist(er$location)
+passive_players = er[[1, 'shot.freeze_frame']]
+teammate = er[[1, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', er[[1, 'shot.statsbomb_xg']]))
+
+geom_features(active_player, passive_players)

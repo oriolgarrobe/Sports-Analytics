@@ -176,6 +176,41 @@ for (i in 1:nrow(shots)) {
 # 6485 rows x 26 columns
 
 
+## add geometric features to shots
+shots$dist = NA
+shots$angle = NA
+shots$obstacles = NA
+shots$pressure_prox = NA 
+shots$pressure_block = NA 
+shots$gk_obstacle = NA 
+shots$gk_pos = NA 
+shots$gk_pos_adjusted = NA
+shots$split_angle = NA 
+shots$gk_dist_from_player = NA 
+shots$gk_dist_from_goal = NA 
+
+# correct database mistake
+shots[[6467, 'shot.freeze_frame']]$teammate[9] = FALSE
+shots[[6467, 'shot.freeze_frame']]$player.name[9] = 'Idriss Carlos Kameni'
+shots$gk_name[6467] = 'Idriss Carlos Kameni'
+
+for (i in 6467:nrow(shots)) {
+  print(i)
+  geom = geom_features(unlist(shots[i,]$location), as.data.frame(shots[i,]$shot.freeze_frame))
+  shots[i,]$dist = geom$dist
+  shots[i,]$angle = geom$angle
+  shots[i,]$obstacles = geom$obstacles
+  shots[i,]$pressure_prox = geom$pressure_prox
+  shots[i,]$pressure_block = geom$pressure_block
+  shots[i,]$gk_obstacle = geom$gk_obstacle
+  shots[i,]$gk_pos = geom$gk_pos
+  shots[i,]$gk_pos_adjusted = geom$gk_pos_adjusted
+  shots[i,]$split_angle = geom$split_angle
+  shots[i,]$gk_dist_from_player = geom$gk_dist_from_player
+  shots[i,]$gk_dist_from_goal = geom$gk_dist_from_goal
+}
+
+# 6485 rows x 37 columns
 
 ### save shots dataframe for future use
 save(shots,file="shots.Rda")
