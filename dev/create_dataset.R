@@ -113,7 +113,8 @@ for (season in season_ids$season_id) {
   
   # read in current season matches
   current_season <- fromJSON(paste0('data/matches/11/',season,'.json'), flatten = T)
-  current_season <- select(current_season, c(match_id, 
+  current_season <- select(current_season, c(match_id,
+                                             match_date,
                                              home_team.home_team_name, 
                                              away_team.away_team_name,
                                              home_score,
@@ -135,11 +136,16 @@ all_matches <- mutate(all_matches, home = ifelse(home_team.home_team_name == 'Ba
 # create opposition team name variable
 all_matches <- mutate(all_matches, opponent_team = ifelse(home, away_team.away_team_name, home_team.home_team_name))
 
+### save all_matches dataframe for future use
+save(all_matches,file="all_matches.Rda")
+
+
 # merge with shots and add home, opponent_team columns to shots
 shots <- shots %>% left_join(all_matches, by = 'match_id') %>% select(-c(home_team.home_team_name, 
                                                                          away_team.away_team_name,
                                                                          home_score,
-                                                                         away_score))
+                                                                         away_score,
+                                                                         match_date))
 # 6485 rows x 27 columns
 
 

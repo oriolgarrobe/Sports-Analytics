@@ -152,3 +152,15 @@ plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid[[id,
 
 geom_features(active_player, passive_players)
 
+
+
+######## no keeper (mistake, because keeper was there, lying on the ground behind player)
+# https://youtu.be/nasCTSj2rww?t=448
+osa = shots[1351,]
+active_player = unlist(osa$location)
+passive_players = osa[[1, 'shot.freeze_frame']]
+teammate = osa[[1, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', osa[[1, 'shot.statsbomb_xg']]))
+
+geom_features(active_player, passive_players)
+
