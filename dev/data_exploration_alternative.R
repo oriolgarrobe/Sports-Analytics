@@ -4,7 +4,7 @@ library(tidyverse)
  competitions <- fromJSON('data/competitions.json')
 
 ##############################################################################################
-# Barcelona - Real Madrid
+# Real Madrid - Barcelona
 # 3-0
 # 2017.12.23
 # https://www.whoscored.com/Matches/1222139/Live/Spain-LaLiga-2017-2018-Real-Madrid-Barcelona

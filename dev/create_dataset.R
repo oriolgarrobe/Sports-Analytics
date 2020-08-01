@@ -1,7 +1,7 @@
 library(jsonlite)
 library(tidyverse)
 
-### Script that creates the dataset for analysis from Statsbomb data
+############################## Script that creates the dataset for analysis from Statsbomb data ##############################
 
 ## merge all Barca events and filter to shots
 competitions <- fromJSON('data/competitions.json')
@@ -132,18 +132,43 @@ for (season in season_ids$season_id) {
 # create home variable (TRUE if home, FALSE if away)
 all_matches <- mutate(all_matches, home = ifelse(home_team.home_team_name == 'Barcelona', TRUE, FALSE))
 
-# merge with shots and add home column to shots
+# create opposition team name variable
+all_matches <- mutate(all_matches, opponent_team = ifelse(home, away_team.away_team_name, home_team.home_team_name))
+
+# merge with shots and add home, opponent_team columns to shots
 shots <- shots %>% left_join(all_matches, by = 'match_id') %>% select(-c(home_team.home_team_name, 
                                                                          away_team.away_team_name,
                                                                          home_score,
                                                                          away_score))
-# 6485 rows x 26 columns
+# 6485 rows x 27 columns
 
 
 # remove shot type columns
 shots <- select(shots,-c(shot.type.id,
                          shot.type.name))
-# 6485 rows x 24 columns
+# 6485 rows x 25 columns
+
+
+## add goalkeeper name in a new column
+shots$gk_name = NA
+
+get_gk_name <- function(freeze_frame){
+  freeze_frame = as.data.frame(freeze_frame)
+  gk_index = which(freeze_frame$position.name=='Goalkeeper' & !freeze_frame$teammate)
+  if (isTRUE(gk_index>0)) {
+    return(freeze_frame$player.name[gk_index])
+  } else {
+    return(NA)
+  }
+}
+
+for (i in 1:nrow(shots)) {
+  print(i)
+  shots[i,]$gk_name = get_gk_name(shots[i,]$shot.freeze_frame)
+}
+
+# 6485 rows x 26 columns
+
 
 
 ### save shots dataframe for future use
@@ -152,3 +177,4 @@ save(shots,file="shots.Rda")
 
 ### load data
 load("shots.Rda")
+
