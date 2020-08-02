@@ -31,4 +31,27 @@ for (season in season_ids$season_id) {
   }
 }
 
+# Preferred foot df
+pref_foot <- data.frame()
+for (season in season_ids$season_id) {
+
+  current_season <- fromJSON(paste0('data/matches/11/',season,'.json'))
+  match_ids <- current_season %>% select(match_id)
+  
+  for (match in match_ids$match_id) {
+    current_match <- fromJSON(paste0('data/events/',match,'.json'), flatten = T)
+    
+    for (i in 1:2) {
+      if (current_match$team.name[i]=='Barcelona') {
+        pref_foot <- rbind(pref_foot, current_match$tactics.lineup[i][[1]])
+      }
+    }
+    pref_foot <- pref_foot %>% distinct(player.name, .keep_all = TRUE)
+    
+  }
+}
+
 # Map player ratings
+
+
+# fifaindex.com
