@@ -2,8 +2,8 @@ geom_features <- function(active_player, passive_players){
   ### Calculates geometric features for a shot
   
   # INPUTS
-  # active player = vector of 2 coordinates (x,y)
-  # passive players = freeze frame dataframe
+  # active player = list of vector of 2 coordinates (x,y)
+  # passive players = freeze frame dataframe as list
   
   # OUTPUTS
   # dist = distance to center of the goal from shot taker (not metre!!!)
@@ -25,6 +25,10 @@ geom_features <- function(active_player, passive_players){
   goalline = 8
   goalpost1 = c(120,36)
   goalpost2 = c(120,44)
+  
+  # convert types to vector and data frame
+  active_player = unlist(active_player)
+  passive_players = as.data.frame(passive_players)
   
   # distance to goalposts
   dist_goalpost1 = distance(goalpost1, active_player)
@@ -99,14 +103,20 @@ geom_features <- function(active_player, passive_players){
     split_angle = 0
   }
   
-  # gk_dist_from_player
-  gk_dist_from_player = distance(gk_loc, active_player)
+  # gk_dist_from_player, gk_dist_from_goal
+  # only if gk has a location (is in the freeze frame)
+  if (!is.null(gk_loc)) {
+    gk_dist_from_player = distance(gk_loc, active_player)
+    gk_dist_from_goal = distance(gk_loc, goal)
+  } else {
+    # if GK is not in freeze frame, assume that he is 5 "meters" behind shooter
+    gk_dist_from_player = 5
+    gk_dist_from_goal = dist + 5
+  }
+
   
-  # gk_dist_from_goal
-  gk_dist_from_goal = distance(gk_loc, goal)
-  
-  # put results into a list
-  result = list(dist = dist,
+  # put results into a data frame
+  result = data.frame(dist = dist,
                 angle = angle,
                 obstacles = obstacles,
                 pressure_prox = pressure_prox,
@@ -126,8 +136,8 @@ geom_features <- function(active_player, passive_players){
 # test
 #active_player = shots[[4,'location']]
 active_player = c(115,50)
-passive_players = shots[[4, 'shot.freeze_frame']]
-teammate = shots[[4, 'shot.freeze_frame']]$teammate
+passive_players = as.data.frame(shots[4,]$shot.freeze_frame)
+teammate = passive_players$teammate
 plot_pitch(active_player, passive_players, main = 'open play')
 
 geom_features(active_player, passive_players)
@@ -152,3 +162,35 @@ plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid[[id,
 
 geom_features(active_player, passive_players)
 
+
+
+######## no keeper (mistake, because keeper was there, lying on the ground behind player)
+# https://youtu.be/nasCTSj2rww?t=448
+osa = shots[1351,]
+active_player = unlist(osa$location)
+passive_players = osa[[1, 'shot.freeze_frame']]
+teammate = osa[[1, 'shot.freeze_frame']]$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', osa[[1, 'shot.statsbomb_xg']]))
+
+geom_features(active_player, passive_players)
+
+
+######## error
+er = shots[6467,]
+active_player = er$location
+passive_players = as.data.frame(er$shot.freeze_frame)
+teammate = passive_players$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', er[[1, 'shot.statsbomb_xg']]))
+
+geom_features(active_player, passive_players)
+
+
+
+######## check
+er = shots[6471,]
+active_player = er$location
+passive_players = as.data.frame(er$shot.freeze_frame)
+teammate = passive_players$teammate
+plot_pitch(active_player, passive_players, main = paste0('xG: ', er[[1, 'shot.statsbomb_xg']]))
+
+geom_features(active_player, passive_players)

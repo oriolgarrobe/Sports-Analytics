@@ -4,7 +4,7 @@ library(tidyverse)
  competitions <- fromJSON('data/competitions.json')
 
 ##############################################################################################
-# Barcelona - Real Madrid
+# Real Madrid - Barcelona
 # 3-0
 # 2017.12.23
 # https://www.whoscored.com/Matches/1222139/Live/Spain-LaLiga-2017-2018-Real-Madrid-Barcelona
@@ -13,6 +13,8 @@ library(tidyverse)
 match_df <- fromJSON('data/events/9736.json')
 match_df_flat <- fromJSON('data/events/9736.json', flatten = T)
 
+
+shot_realmadrid_flat = filter(match_df_flat, type.name == 'Shot')
 goals = match_df %>% filter(match_df$shot$outcome$name == 'Goal')
 goals_flat = match_df_flat %>% filter(match_df_flat$shot.outcome.name == 'Goal')
 cards = match_df %>% filter(match_df$foul_committed$card$name %in% c('Yellow Card', 'Red Card') |
@@ -20,10 +22,10 @@ cards = match_df %>% filter(match_df$foul_committed$card$name %in% c('Yellow Car
 
 
 # plot pitch for goals
-for (i in rownames(goals)) {
-  active_player = goals_flat[[i,'location']]
-  passive_players = goals_flat[[i, 'shot.freeze_frame']]
-  teammate = goals_flat[[i, 'shot.freeze_frame']]$teammate
+for (i in c(1,3)) {
+  active_player = goals_flat[i,]$location
+  passive_players = goals_flat[i,]$shot.freeze_frame
+  teammate = passive_players$teammate
   plot_pitch(active_player, passive_players, main = i)
 }
 
