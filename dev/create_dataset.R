@@ -224,6 +224,12 @@ shots[2549,]$gk_name = 'Orestis Karnezis'
 shots[4363,]$gk_name = 'Iker Casillas Fernández'
 shots[6241,]$gk_name = 	'Miguel Ángel Moyà Rumbo'
 
+# fill in first_time = FALSE, where missing (only 9 rows)
+shots[['shot.first_time']] = shots[['shot.first_time']] %>% replace_na(FALSE)
+
+# fill in angle where missing (because the shooter is standing on the goalline, so the angle is 180)
+shots[1614,]$angle = 180
+
 ### save shots dataframe for future use
 save(shots,file="shots.Rda")
 
@@ -231,8 +237,6 @@ save(shots,file="shots.Rda")
 ### load data
 load("shots.Rda")
 
-
-View(filter(shots, is.na(shot.one_on_one)) %>% select(shot.one_on_one, gk_obstacle, obstacles) )
 
 
 #### select dataset for analysis
