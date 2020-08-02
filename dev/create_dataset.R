@@ -139,6 +139,9 @@ all_matches <- mutate(all_matches, opponent_team = ifelse(home, away_team.away_t
 ### save all_matches dataframe for future use
 save(all_matches,file="all_matches.Rda")
 
+## load all_matches
+load('all_matches.Rda')
+
 
 # merge with shots and add home, opponent_team columns to shots
 shots <- shots %>% left_join(all_matches, by = 'match_id') %>% select(-c(home_team.home_team_name, 
@@ -196,7 +199,7 @@ shots$gk_name[6467] = 'Idriss Carlos Kameni'
 
 for (i in 6467:nrow(shots)) {
   print(i)
-  geom = geom_features(unlist(shots[i,]$location), as.data.frame(shots[i,]$shot.freeze_frame))
+  geom = geom_features(shots[i,]$location, shots[i,]$shot.freeze_frame)
   shots[i,]$dist = geom$dist
   shots[i,]$angle = geom$angle
   shots[i,]$obstacles = geom$obstacles
@@ -212,10 +215,43 @@ for (i in 6467:nrow(shots)) {
 
 # 6485 rows x 37 columns
 
+
+# fill in goalkeeper name, where missing
+matches = filter(shots, is.na(gk_name)) %>% select(match_id)
+
+shots[1351,]$gk_name = 'Salvatore Sirigu'
+shots[2549,]$gk_name = 'Orestis Karnezis'
+shots[4363,]$gk_name = 'Iker Casillas Fernández'
+shots[6241,]$gk_name = 	'Miguel Ángel Moyà Rumbo'
+
 ### save shots dataframe for future use
 save(shots,file="shots.Rda")
 
 
 ### load data
 load("shots.Rda")
+
+
+View(filter(shots, is.na(shot.one_on_one)) %>% select(shot.one_on_one, gk_obstacle, obstacles) )
+
+
+#### select dataset for analysis
+
+anal <- shots %>% select(id,
+                         #strong_foot, #(Boolean)
+                         #player_rating,
+                         #gk_rating,
+                         shot.first_time,
+                         under_pressure,
+                         home,
+                         dist,
+                         angle,
+                         obstacles,
+                         pressure_prox,
+                         pressure_block,
+                         gk_obstacle,
+                         gk_pos_adjusted,
+                         gk_dist_from_player,
+                         gk_dist_from_goal,
+                         goal)
 

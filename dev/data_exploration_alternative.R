@@ -11,7 +11,7 @@ library(tidyverse)
 # https://www.youtube.com/watch?v=RTKb97wltyo&t=94s
 
 match_df <- fromJSON('data/events/9736.json')
-match_df_flat2 <- fromJSON('data/events/9736.json', flatten = T)
+match_df_flat <- fromJSON('data/events/9736.json', flatten = T)
 
 
 shot_realmadrid_flat = filter(match_df_flat, type.name == 'Shot')
@@ -22,10 +22,10 @@ cards = match_df %>% filter(match_df$foul_committed$card$name %in% c('Yellow Car
 
 
 # plot pitch for goals
-for (i in rownames(goals)) {
-  active_player = goals_flat[[i,'location']]
-  passive_players = goals_flat[[i, 'shot.freeze_frame']]
-  teammate = goals_flat[[i, 'shot.freeze_frame']]$teammate
+for (i in c(1,3)) {
+  active_player = goals_flat[i,]$location
+  passive_players = goals_flat[i,]$shot.freeze_frame
+  teammate = passive_players$teammate
   plot_pitch(active_player, passive_players, main = i)
 }
 

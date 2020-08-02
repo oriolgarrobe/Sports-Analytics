@@ -2,8 +2,8 @@ geom_features <- function(active_player, passive_players){
   ### Calculates geometric features for a shot
   
   # INPUTS
-  # active player = vector of 2 coordinates (x,y)
-  # passive players = freeze frame dataframe
+  # active player = list of vector of 2 coordinates (x,y)
+  # passive players = freeze frame dataframe as list
   
   # OUTPUTS
   # dist = distance to center of the goal from shot taker (not metre!!!)
@@ -25,6 +25,10 @@ geom_features <- function(active_player, passive_players){
   goalline = 8
   goalpost1 = c(120,36)
   goalpost2 = c(120,44)
+  
+  # convert types to vector and data frame
+  active_player = unlist(active_player)
+  passive_players = as.data.frame(passive_players)
   
   # distance to goalposts
   dist_goalpost1 = distance(goalpost1, active_player)
@@ -132,8 +136,8 @@ geom_features <- function(active_player, passive_players){
 # test
 #active_player = shots[[4,'location']]
 active_player = c(115,50)
-passive_players = shots[[4, 'shot.freeze_frame']]
-teammate = shots[[4, 'shot.freeze_frame']]$teammate
+passive_players = as.data.frame(shots[4,]$shot.freeze_frame)
+teammate = passive_players$teammate
 plot_pitch(active_player, passive_players, main = 'open play')
 
 geom_features(active_player, passive_players)
@@ -173,9 +177,9 @@ geom_features(active_player, passive_players)
 
 ######## error
 er = shots[6467,]
-active_player = unlist(er$location)
-passive_players = er[[1, 'shot.freeze_frame']]
-teammate = er[[1, 'shot.freeze_frame']]$teammate
+active_player = er$location
+passive_players = as.data.frame(er$shot.freeze_frame)
+teammate = passive_players$teammate
 plot_pitch(active_player, passive_players, main = paste0('xG: ', er[[1, 'shot.statsbomb_xg']]))
 
 geom_features(active_player, passive_players)
@@ -184,9 +188,9 @@ geom_features(active_player, passive_players)
 
 ######## check
 er = shots[6471,]
-active_player = unlist(er$location)
-passive_players = er[[1, 'shot.freeze_frame']]
-teammate = er[[1, 'shot.freeze_frame']]$teammate
+active_player = er$location
+passive_players = as.data.frame(er$shot.freeze_frame)
+teammate = passive_players$teammate
 plot_pitch(active_player, passive_players, main = paste0('xG: ', er[[1, 'shot.statsbomb_xg']]))
 
 geom_features(active_player, passive_players)
