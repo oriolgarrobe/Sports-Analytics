@@ -137,10 +137,10 @@ all_matches <- mutate(all_matches, home = ifelse(home_team.home_team_name == 'Ba
 all_matches <- mutate(all_matches, opponent_team = ifelse(home, away_team.away_team_name, home_team.home_team_name))
 
 ### save all_matches dataframe for future use
-save(all_matches,file="all_matches.Rda")
+save(all_matches,file="dev/all_matches.Rda")
 
 ## load all_matches
-load('all_matches.Rda')
+load("dev/all_matches.Rda")
 
 
 # merge with shots and add home, opponent_team columns to shots
@@ -231,11 +231,11 @@ shots[['shot.first_time']] = shots[['shot.first_time']] %>% replace_na(FALSE)
 shots[1614,]$angle = 180
 
 ### save shots dataframe for future use
-save(shots,file="shots.Rda")
+save(shots,file="dev/shots.Rda")
 
 
 ### load data
-load("shots.Rda")
+load("dev/shots.Rda")
 
 
 
