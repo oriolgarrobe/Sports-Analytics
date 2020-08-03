@@ -68,8 +68,14 @@ for (season in season_ids$season_id) {
     # add match_id
     filtered = filtered %>% add_column(match_id = match)
     
+    # add season_id
+    filtered = filtered %>% add_column(season_id = season)
+    
     # order columns alphabetically (to ensure that matches have the same order of columns before merging)
     filtered = filtered %>% select(order(colnames(.)))
+    
+    
+    
     
     # first iteration overwrites shots, after that only appends to it
     if (counter == 0) {
@@ -230,13 +236,26 @@ shots[['shot.first_time']] = shots[['shot.first_time']] %>% replace_na(FALSE)
 # fill in angle where missing (because the shooter is standing on the goalline, so the angle is 180)
 shots[1614,]$angle = 180
 
+# Add preferred foot
+pref_foot_df <- read_xlsx('data/preferred_foot.xlsx', col_names = TRUE)
+shots <- merge(shots, pref_foot_df, by = "player.id", all.x = T)
+
+# Add player ratings
+player_ratings_df <- read_xlsx('data/player_ratings.xlsx', col_names = TRUE)
+player_ratings_df$jersey_number <- NULL
+player_ratings_df$position.id <- NULL
+player_ratings_df$position.name <- NULL
+player_ratings_df$player.name <- NULL
+
+shots <- merge(shots, player_ratings_df, by = c("player.id", "season_id"), all.x = T)
+
+
 ### save shots dataframe for future use
 save(shots,file="dev/shots.Rda")
 
 
 ### load data
 load("dev/shots.Rda")
-
 
 
 #### select dataset for analysis
