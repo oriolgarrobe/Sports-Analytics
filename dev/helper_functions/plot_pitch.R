@@ -12,10 +12,12 @@ plot_pitch <- function(active_player = NA, passive_players = NA, index = NA, df 
   # draw empty pitch
   plot(120,80, xlim=c(0,120), ylim = rev(c(0,80)), ylab = '', xlab = '')
   abline(v=c(120, 60),  h = 80)
-  
+
   # draw goalposts
   points(120,36, pch = 3)
   points(120,44, pch = 3)
+
+
 
   # check what kind of input we have
   if (is.na(index)) {

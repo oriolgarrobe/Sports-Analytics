@@ -1,8 +1,16 @@
 #################### TESTING STUFF ##########################
 
 
+### Plot shots on the pitch using soccermatics package
+
+if (!require("devtools")) install.packages("devtools")
+devtools::install_github("jogall/soccermatics")
+
+library(soccermatics)
+
 ### plot shot by index
 index = '607646b4-ec84-4629-8728-e5ba6e71bf2b'
+plot_shot(index = index, df = shots)
 plot_pitch(index = index, df = shots)
 
 ## geom features by index
@@ -25,6 +33,7 @@ active_player = shots[[3619,'location']]
 #active_player = c(109.1, 37.8)
 passive_players = as.data.frame(shots[3619,]$shot.freeze_frame)
 teammate = passive_players$teammate
+plot_shot(active_player, passive_players)
 plot_pitch(active_player, passive_players, main = 'open play')
 geom_features(active_player, passive_players)
 
