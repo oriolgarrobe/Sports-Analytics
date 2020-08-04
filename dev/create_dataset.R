@@ -1,5 +1,7 @@
 library(jsonlite)
 library(tidyverse)
+library(readxl)
+
 
 ############################## Script that creates the dataset for analysis from Statsbomb data ##############################
 
@@ -216,7 +218,7 @@ shots[[6467, 'shot.freeze_frame']]$teammate[9] = FALSE
 shots[[6467, 'shot.freeze_frame']]$player.name[9] = 'Idriss Carlos Kameni'
 shots$gk_name[6467] = 'Idriss Carlos Kameni'
 
-for (i in 6467:nrow(shots)) {
+for (i in 1:6466) { #6467:nrow(shots)) {
   print(i)
   geom = geom_features(shots[i,]$location, shots[i,]$shot.freeze_frame)
   shots[i,]$dist = geom$dist
@@ -251,7 +253,7 @@ shots[1614,]$angle = 180
 
 # Add preferred foot
 pref_foot_df <- read_xlsx('data/preferred_foot.xlsx', col_names = TRUE)
-#shots <- merge(shots, pref_foot_df, by = "player.id", all.x = T)
+shots_test <- merge(shots, pref_foot_df, by = "player.id", all.x = T)
 
 # Add player ratings
 player_ratings_df <- read_xlsx('data/player_ratings.xlsx', col_names = TRUE)
@@ -261,8 +263,18 @@ player_ratings_df <- select(player_ratings_df, -c(jersey_number,
                                                   player.name))
 
 
-#shots <- merge(shots, player_ratings_df, by = c("player.id", "season_id"), all.x = T)
+shots_test <- merge(shots_test, player_ratings_df, by = c("player.id", "season_id"), all.x = T)
 
+# Add goalies ratings
+
+gk_ratings_df <- read_xlsx('data/gk_ratings.xlsx', col_names = TRUE)
+names(gk_ratings_df)[names(gk_ratings_df) == "Overal Rating"] <- "gk_rating"
+gk_ratings_df <- select(gk_ratings_df, -c(jersey_number,
+                                                  position.id,
+                                                  position.name,
+                                                  player.name))
+
+shots_test <- merge(shots_test, gk_ratings_df, by.x = c("gk_id", "season_id"), by.y = c("player.id", "season_id"), all.x = T)
 
 ### save shots dataframe for future use
 save(shots,file="dev/shots.Rda")
