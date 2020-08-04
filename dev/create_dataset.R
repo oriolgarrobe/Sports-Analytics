@@ -164,8 +164,9 @@ shots <- select(shots,-c(shot.type.id,
 # 6485 rows x 25 columns
 
 
-## add goalkeeper name in a new column
+## add goalkeeper name and id in new columns
 shots$gk_name = NA
+shots$gk_id = NA
 
 get_gk_name <- function(freeze_frame){
   freeze_frame = as.data.frame(freeze_frame)
@@ -177,10 +178,22 @@ get_gk_name <- function(freeze_frame){
   }
 }
 
+get_gk_id <- function(freeze_frame){
+  freeze_frame = as.data.frame(freeze_frame)
+  gk_index = which(freeze_frame$position.name=='Goalkeeper' & !freeze_frame$teammate)
+  if (isTRUE(gk_index>0)) {
+    return(freeze_frame$player.id[gk_index])
+  } else {
+    return(NA)
+  }
+}
+
 for (i in 1:nrow(shots)) {
   print(i)
   shots[i,]$gk_name = get_gk_name(shots[i,]$shot.freeze_frame)
+  shots[i,]$gk_id = get_gk_id(shots[i,]$shot.freeze_frame)
 }
+
 
 # 6485 rows x 26 columns
 
@@ -238,16 +251,17 @@ shots[1614,]$angle = 180
 
 # Add preferred foot
 pref_foot_df <- read_xlsx('data/preferred_foot.xlsx', col_names = TRUE)
-shots <- merge(shots, pref_foot_df, by = "player.id", all.x = T)
+#shots <- merge(shots, pref_foot_df, by = "player.id", all.x = T)
 
 # Add player ratings
 player_ratings_df <- read_xlsx('data/player_ratings.xlsx', col_names = TRUE)
-player_ratings_df$jersey_number <- NULL
-player_ratings_df$position.id <- NULL
-player_ratings_df$position.name <- NULL
-player_ratings_df$player.name <- NULL
+player_ratings_df <- select(player_ratings_df, -c(jersey_number,
+                                                  position.id,
+                                                  position.name,
+                                                  player.name))
 
-shots <- merge(shots, player_ratings_df, by = c("player.id", "season_id"), all.x = T)
+
+#shots <- merge(shots, player_ratings_df, by = c("player.id", "season_id"), all.x = T)
 
 
 ### save shots dataframe for future use
