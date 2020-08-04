@@ -80,3 +80,54 @@ p
 
 
 
+######## half pitch
+soccerPitchHalf(lengthPitch = 120, 
+                widthPitch = 80, 
+                arrow = c("none", "r","l"), 
+                theme = "grass", 
+                title = 'MESSI GOAL xg = 0.023',
+                subtitle = NULL) + 
+  geom_point(aes(x = 40, y = 112), colour = 'black', size = 2, shape = 21, fill = 'red')+ 
+  geom_point(aes(x = 40, y = 116), colour = 'grey')
+
+             
+
+
+
+# draw empty pitch
+soccerPitchHalf(lengthPitch = 120,
+                widthPitch = 80,
+                arrow = 'none', 
+                title = paste0(player_name, 
+                               ifelse(outcome == 1, ' GOAL', ' MISS'),
+                               ', xG = ',
+                               ifelse(is.na(xg), 'unknown', round(xg,3))), 
+                subtitle = NULL, 
+                theme = "grass") + 
+  # add active player location
+  geom_point(data = filter(players, active), 
+             aes(x = y, y = x), 
+             col = "yellow") +
+  # add passive player locations (teammates)
+  geom_point(data = filter(players, !active & teammate), 
+             aes(x = y, y = x), 
+             col = "blue") +
+  # add passive player locations (opponents)
+  geom_point(data = filter(players, !active & !teammate), 
+             aes(x = y, y = x), 
+             col = "red") +
+  # add opponent goalkeeper location
+  geom_point(data = filter(players, !active & !teammate & position_name == 'Goalkeeper'), 
+             aes(x = y, y = x), 
+             col = "white") +
+  # add shot end location
+  geom_point(data = filter(players, name == 'shot end location'), 
+             aes(x = y, y = x), 
+             col = "black") +
+  # add arrow between shooter and end location
+  geom_segment(data = filter(players, active),
+               aes(x = y, y = x, xend = width - shot_end_location[2], yend = shot_end_location[1]), 
+               colour = 'blue',
+               arrow = arrow)
+
+
