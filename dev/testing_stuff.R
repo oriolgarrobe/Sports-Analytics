@@ -23,7 +23,7 @@ source("dev/helper_functions/plot_shot.R")
 source("dev/helper_functions/plot_pitch.R")
 
 ### plot shot by index
-index = '0ac3b192-4929-4684-94f3-e449888ffed3'
+index = '607646b4-ec84-4629-8728-e5ba6e71bf2b'
 plot_shot(index = index, df = shots, full_pitch = T)
 plot_shot(index = index, df = shots, full_pitch = F)
 plot_pitch(index = index, df = shots)
@@ -44,8 +44,8 @@ filter(shots, id == index) %>% select(dist,
 
 
 # test
-#active_player = shots[[3619,'location']]
-active_player = c(102, 40)
+active_player = shots[[3619,'location']]
+#active_player = c(102, 40)
 passive_players = as.data.frame(shots[3619,]$shot.freeze_frame)
 teammate = passive_players$teammate
 plot_shot(active_player, passive_players)

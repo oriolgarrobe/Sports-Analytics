@@ -218,7 +218,7 @@ shots[[6467, 'shot.freeze_frame']]$teammate[9] = FALSE
 shots[[6467, 'shot.freeze_frame']]$player.name[9] = 'Idriss Carlos Kameni'
 shots$gk_name[6467] = 'Idriss Carlos Kameni'
 
-for (i in 1:6466) { #6467:nrow(shots)) {
+for (i in 1:nrow(shots)) {
   print(i)
   geom = geom_features(shots[i,]$location, shots[i,]$shot.freeze_frame)
   shots[i,]$dist = geom$dist
@@ -303,4 +303,4 @@ anal <- shots %>% select(id,
                          gk_dist_from_player,
                          gk_dist_from_goal,
                          goal)
-
+summary(anal)
