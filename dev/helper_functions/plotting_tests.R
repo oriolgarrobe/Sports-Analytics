@@ -77,3 +77,6 @@ p = soccerPitch(lengthPitch = 120,
              aes(x = loc1, y = loc2), 
              col = "white")
 p
+
+
+

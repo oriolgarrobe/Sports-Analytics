@@ -6,7 +6,21 @@
 if (!require("devtools")) install.packages("devtools")
 devtools::install_github("jogall/soccermatics")
 
+# load libraries
 library(soccermatics)
+library(ggplot2)
+library(tidyverse)
+
+
+# load scripts
+source("dev/helper_functions/gauss_kernel.R")
+source("dev/helper_functions/geom_features.R")
+source("dev/helper_functions/distance.R")
+source("dev/helper_functions/angle.R")
+source("dev/helper_functions/triangle_area.R")
+source("dev/helper_functions/is_in_triangle.R")
+source("dev/helper_functions/plot_shot.R")
+source("dev/helper_functions/plot_pitch.R")
 
 ### plot shot by index
 index = '607646b4-ec84-4629-8728-e5ba6e71bf2b'

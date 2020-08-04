@@ -8,6 +8,9 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, df =
   # df = name of dataframe
   # main = title of plot
   
+  width = 80
+  length = 120
+  
   # create dataframe with players
   players = data.frame('name' = character(0),
                        "x" = numeric(0), 
@@ -28,7 +31,8 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, df =
     shot_end_location = c(NA_real_, NA_real_)
     new_player = data.frame('shot end location', # name
                             shot_end_location[1], # x
-                            shot_end_location[2], # y
+                            # invert y coordinate
+                            width - shot_end_location[2], # y
                             NA, # teammate
                             '', # position name
                             NA) # active
@@ -41,7 +45,8 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, df =
     # according to the simple input type (active_player, passive_players)
     new_player = data.frame('', # name
                             active_player[1], # x
-                            active_player[2], # y
+                            # invert y coordinate
+                            width - active_player[2], # y
                             TRUE, # teammate
                             '', # position name
                             TRUE) # active
@@ -50,6 +55,7 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, df =
     players <- rbind(players, new_player)
     player_name = ''
     xg = NA_real_
+    outcome = NA
     
     
   } else {
@@ -73,7 +79,8 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, df =
     # add shot end location to players df
     new_player = data.frame('shot end location', # name
                             shot_end_location[1], # x
-                            shot_end_location[2], # y
+                            # invert y coordinate
+                            width - shot_end_location[2], # y
                             NA, # teammate
                             '', # position name
                             NA) # active
@@ -85,8 +92,9 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, df =
     # according to the complex input type (index)
     new_player = data.frame(player_name,
                             active_player[1], # x
-                            active_player[2], # y
-                            passive_players[['teammate']][i],
+                            # invert y coordinate
+                            width - active_player[2], # y
+                            TRUE, # teammate
                             position_name,
                             TRUE) # active
     names(new_player) = c('name', 'x', 'y', 'teammate', 'position_name', 'active')
@@ -103,7 +111,8 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, df =
     for (i in 1:nrow(passive_players)) {
         new_player = data.frame(passive_players[['player.name']][i],
                                 passive_players[[i,1]][1], # x
-                                passive_players[[i,1]][2], # y
+                                # invert y coordinate
+                                width - passive_players[[i,1]][2], # y
                                 passive_players[['teammate']][i],
                                 passive_players[['position.name']][i],
                                 FALSE) # active
@@ -117,8 +126,8 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, df =
   # specify arrow
   arrow = arrow(angle = 30, length = unit(0.3, "cm"),ends = "last", type = "open")
   # draw empty pitch
-  p = soccerPitch(lengthPitch = 120,
-                  widthPitch = 80, 
+  p = soccerPitch(lengthPitch = length,
+                  widthPitch = width,
                   arrow = 'none', 
                   title = paste0(player_name, 
                                 ifelse(outcome == 1, ' GOAL', ' MISS'),
@@ -148,12 +157,11 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, df =
                  col = "black") +
     # add arrow between shooter and end location
       geom_segment(data = filter(players, active),
-                   aes(x = x, y = y, xend = shot_end_location[1], yend = shot_end_location[2]), 
+                   aes(x = x, y = y, xend = shot_end_location[1], yend = width - shot_end_location[2]), 
                    colour = 'blue',
                    arrow = arrow)
   return(p)
 }
 
 ######## TO DO
-# invert coordinates
 

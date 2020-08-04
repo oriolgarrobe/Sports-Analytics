@@ -37,16 +37,16 @@ gauss_kernel <- function(split_angle, shot_angle, adjusted = FALSE){
 
 # test
 
-x = seq(0,180, by = 0.01)
-h3 = 20
-kernel3 =  exp(-((x)/h3)^2)+0.2
-plot(x, kernel3, type = 'l', main = "Gaussian kernel", xlab = "", ylim = c(0,2), ylab = "kernel value")
-abline(v = 37, col = 'blue')
-
-
-shot_angle2 = 180
-perc_diff = seq(0,1, by = 0.001)
-h2 = 0.2
-kernel2 =  exp(-((perc_diff - 0.5)/h2)^2)
-plot(split_angle2, kernel2, type = 'l', main = "Gaussian kernel", xlab = "", ylim = c(0,1), ylab = "kernel value")
-abline(v = 0.5, col = 'blue')
+# x = seq(0,180, by = 0.01)
+# h3 = 20
+# kernel3 =  exp(-((x)/h3)^2)+0.2
+# plot(x, kernel3, type = 'l', main = "Gaussian kernel", xlab = "", ylim = c(0,2), ylab = "kernel value")
+# abline(v = 37, col = 'blue')
+# 
+# 
+# shot_angle2 = 180
+# perc_diff = seq(0,1, by = 0.001)
+# h2 = 0.2
+# kernel2 =  exp(-((perc_diff - 0.5)/h2)^2)
+# plot(split_angle2, kernel2, type = 'l', main = "Gaussian kernel", xlab = "", ylim = c(0,1), ylab = "kernel value")
+# abline(v = 0.5, col = 'blue')
