@@ -260,7 +260,8 @@ plot_pitch(active_player, passive_players, main = paste0('xG: ', realmadrid[[id,
 
 realmadrid_home <- fromJSON('data/events/69299.json', flatten = T)
 
-realmadrid_home = realmadrid_home %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(shot.outcome.name,
+realmadrid_home = realmadrid_home %>% dplyr::filter(team.name=='Barcelona') %>% dplyr::filter(type.name == 'Shot') %>% select(id,
+                                                                                                                              shot.outcome.name,
                                                                                                                        shot.freeze_frame,
                                                                                                                        shot.type.name,
                                                                                                                        shot.statsbomb_xg,
