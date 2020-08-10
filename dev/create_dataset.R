@@ -262,9 +262,19 @@ shots[['shot.first_time']] = shots[['shot.first_time']] %>% replace_na(FALSE)
 # fill in angle where missing (because the shooter is standing on the goalline, so the angle is 180)
 shots[1614,]$angle = 180
 
+
+# 6485 rows x 39 columns
+
+
 # Add preferred foot
 pref_foot_df <- read_xlsx('data/preferred_foot.xlsx', col_names = TRUE)
-shots_test <- merge(shots, pref_foot_df, by = "player.id", all.x = T)
+shots <- merge(shots, pref_foot_df, by = "player.id", all.x = T)
+
+# fill in missing preferred foor
+shots[1630,]$pref_foot = 'Left Foot'
+shots[1743,]$pref_foot = 'Right Foot'
+shots[5245,]$pref_foot = 'Right Foot'
+# didn't find one
 
 # Add player ratings
 player_ratings_df <- read_xlsx('data/player_ratings.xlsx', col_names = TRUE)
@@ -274,7 +284,7 @@ player_ratings_df <- select(player_ratings_df, -c(jersey_number,
                                                   player.name))
 
 
-shots_test <- merge(shots_test, player_ratings_df, by = c("player.id", "season_id"), all.x = T)
+shots <- merge(shots, player_ratings_df, by = c("player.id", "season_id"), all.x = T)
 
 # Add goalies ratings
 
@@ -285,7 +295,19 @@ gk_ratings_df <- select(gk_ratings_df, -c(jersey_number,
                                                   position.name,
                                                   player.name))
 
-shots_test <- merge(shots_test, gk_ratings_df, by.x = c("gk_id", "season_id"), by.y = c("player.id", "season_id"), all.x = T)
+shots <- merge(shots, gk_ratings_df, by.x = c("gk_id", "season_id"), by.y = c("player.id", "season_id"), all.x = T)
+
+# rename player_name column
+shots = rename(shots, player.name = player.name.x)
+
+# rename Overall Rating column
+shots = rename(shots, overall_rating = 'Overal Rating')
+
+# 6485 rows x 49 columns
+
+## add strong_foot variable (Boolean, whether or not the shot was taken with strong foot. Header, etc. is counted as FALSE)
+
+shots$strong_foot = ifelse(shots$pref_foot == shots$shot.body_part.name, TRUE, FALSE)
 
 ### save shots dataframe for future use
 save(shots,file="dev/shots.Rda")
@@ -298,9 +320,15 @@ load("dev/shots.Rda")
 #### select dataset for analysis
 
 anal <- shots %>% select(id,
-                         #strong_foot, #(Boolean)
-                         #player_rating,
-                         #gk_rating,
+                         strong_foot, #(Boolean)
+                         overall_rating,
+                         shot.power,
+                         shot.finishing,
+                         gk_rating,
+                         gk.reflexes,
+                         gk.rushing,
+                         gk.handling,
+                         gk.positioning,
                          shot.first_time,
                          under_pressure,
                          home,
@@ -314,4 +342,6 @@ anal <- shots %>% select(id,
                          gk_dist_from_player,
                          gk_dist_from_goal,
                          goal)
+
+
 summary(anal)
