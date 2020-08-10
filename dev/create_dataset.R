@@ -197,6 +197,7 @@ for (i in 1:nrow(shots)) {
 }
 
 
+
 # 6485 rows x 26 columns
 
 
@@ -244,6 +245,16 @@ shots[1351,]$gk_name = 'Salvatore Sirigu'
 shots[2549,]$gk_name = 'Orestis Karnezis'
 shots[4363,]$gk_name = 'Iker Casillas Fernández'
 shots[6241,]$gk_name = 	'Miguel Ángel Moyà Rumbo'
+
+# fill in goalkeeper id, where missing
+filter(shots, is.na(gk_id))
+unique(filter(shots, gk_name == 'Orestis Karnezis') %>% select(gk_id))
+
+shots[1351,]$gk_id = 7469
+shots[2549,]$gk_id = 3742
+shots[4363,]$gk_id = 11179
+shots[6241,]$gk_id = 7069
+shots[6467,]$gk_id = 26103
 
 # fill in first_time = FALSE, where missing (only 9 rows)
 shots[['shot.first_time']] = shots[['shot.first_time']] %>% replace_na(FALSE)
