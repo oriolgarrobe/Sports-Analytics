@@ -345,3 +345,20 @@ anal <- shots %>% select(id,
 
 
 summary(anal)
+# 6485 x 23
+
+# drop rows that have missing values
+anal <- anal %>% drop_na()
+
+summary(anal)
+# 6428 x 23
+
+
+
+
+####### SAVE FINAL DATASET FOR ANALYSIS
+### save shots dataframe for future use
+save(anal,file="dev/anal.Rda")
+
+### load data
+load("dev/anal.Rda")
