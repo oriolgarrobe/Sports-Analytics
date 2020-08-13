@@ -2,19 +2,49 @@
 ################ SCRIPT FOR BUILDING THE PROBABILISTIC CLASSIFIER MODEL FOR SHOT ANALYSIS #########################
 ###################################################################################################################
 
+### load libraries
+library(caret)
+
+
 ### load data
 load("dev/anal.Rda")
 summary(anal)
 
 
-### divide data into training - validation - test sets (while balancing the 2 classes)
+### divide data into training - validation - test sets (while balancing the 2 classes = stratified sampling)
+prop.table(table(anal$goal)) # 16.241% goal
+train_index = caret::createDataPartition(anal$goal, p = 0.7, list = F) # 70% training
+prop.table(table(anal$goal[train_index])) # 16.333% goal
 
+train = anal[train_index,]
+test = anal[-train_index,]
 
 ### modelling
-# probable models: Naive Bayes (our features are NOT independent!!)
+# possible models: Naive Bayes (our features are NOT independent!!!)
 #                  Logistic Regression
 #                  k-NN
 #                  Random Forest
+
+
+########################################### LOGISTIC REGRESSION ###########################################
+model <- glm(goal ~ .,family=binomial(link='logit'), data = subset(train, select = c(2:23)))
+summary(model)
+
+fitted <- predict(model,newdata = subset(test, select = c(2:23)),type='response')
+fitted <- ifelse(fitted > 0.5,1,0)
+
+misClasificError <- mean(fitted != test$goal)
+print(paste('Accuracy',1-misClasificError))
+table(test$goal, fitted)
+
+
+
+
+
+
+
+
+
 
 
 
