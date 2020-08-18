@@ -38,6 +38,9 @@ print(paste('Accuracy',1-misClasificError))
 table(test$goal, fitted)
 
 
+# compare probabilities to statsbomb_xg
+# calculate confusion matrix based on statsbomb_xg
+
 
 
 
