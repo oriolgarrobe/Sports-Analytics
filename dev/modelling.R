@@ -4,10 +4,12 @@
 
 ### load libraries
 library(caret)
+library(tidyverse)
 
 
 ### load data
 load("dev/anal.Rda")
+load("dev/shots.Rda")
 summary(anal)
 
 
@@ -31,24 +33,43 @@ model <- glm(goal ~ .,family=binomial(link='logit'), data = subset(train, select
 summary(model)
 
 fitted <- predict(model,newdata = subset(test, select = c(2:23)),type='response')
-fitted <- ifelse(fitted > 0.5,1,0)
+fitted_bool <- ifelse(fitted > 0.5,1,0)
 
-misClasificError <- mean(fitted != test$goal)
+misClasificError <- mean(fitted_bool != test$goal)
 print(paste('Accuracy',1-misClasificError))
-table(test$goal, fitted)
-
+cm_fitted = table(test$goal, fitted_bool)
+cm_fitted
+recall_fitted = cm_fitted[2,2] / (cm_fitted[2,2] + cm_fitted[2,1])
+recall_fitted
+precision_fitted = cm_fitted[2,2] / (cm_fitted[2,2] + cm_fitted[1,2])
+precision_fitted
+f1_fitted = (2 * recall_fitted * precision_fitted) / (recall_fitted + precision_fitted)
+f1_fitted
 
 # compare probabilities to statsbomb_xg
 # calculate confusion matrix based on statsbomb_xg
 
+statsbomb_xg <- shots %>% select(id, shot.statsbomb_xg)
+test$pred_bool <- fitted_bool
+test$pred <- fitted
+test <- test %>% left_join(statsbomb_xg, by = 'id')
+test$shot.statsbomb_xg_bool = ifelse(test$shot.statsbomb_xg > 0.5,1,0)
 
+misClasificError <- mean(test$shot.statsbomb_xg_bool != test$goal)
+print(paste('Accuracy',1-misClasificError))
 
+cm_statsbomb = table(test$goal, test$shot.statsbomb_xg_bool)
+cm_statsbomb
+recall_statsbomb = cm_statsbomb[2,2] / (cm_statsbomb[2,2] + cm_statsbomb[2,1])
+recall_statsbomb
+precision_statsbomb = cm_statsbomb[2,2] / (cm_statsbomb[2,2] + cm_statsbomb[1,2])
+precision_statsbomb
+f1_statsbomb = (2 * recall_statsbomb * precision_statsbomb) / (recall_statsbomb + precision_statsbomb)
+f1_statsbomb
 
-
-
-
-
-
+## on baseline, statsbomb's accuracy is 86.36%, which is higher than logreg (85.89%)
+## on baseline, statsbomb's recall is 21.79%, which is lower than logreg (23.72%)
+## on baseline, statsbomb's F1 is 34.09%, which is lower than logreg (35.24%)
 
 
 ### related papers
