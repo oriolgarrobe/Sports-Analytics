@@ -3,12 +3,10 @@ load("dev/anal.Rda")
 summary(anal)
 
 
-####### RANDOM FOREST AND ADABOOST #######
+### model data
 
-# Libraries
-library(mboost)
-library(randomForest)
-
+# library
+library(caret)
 
 # Set logical values to numeric in order to avoid issues
 data <- anal
@@ -28,6 +26,14 @@ prop.table(table(data$goal[train_index])) # 16.333% goal
 
 train = data[train_index,]
 test = data[-train_index,]
+
+
+
+####### RANDOM FOREST AND ADABOOST #######
+
+# Libraries
+library(mboost)
+library(randomForest)
 
 
 # Fit the random forest model
@@ -93,13 +99,32 @@ f1_adaboost
 ##########################################
 
 
-####### NAIVE BAYES ######################
+####### K-Nearest Neighbours ######################
+
+# library
+library(kknn)
+
+# Fit the model
+
+# I want to do some CV in order to choose the best number of neighbours
+a1 <- kknn(formula = as.factor(Spam)~., train = train, test = test, k = 30)
+m.train.a1 <- table(a1$fitted.values, train$Spam)
+m.test.a1 <- table(predict(a1), test$Spam)
 
 
+# Source: https://stats.stackexchange.com/questions/318968/knn-and-k-folding-in-r
 
 
+library(e1071)
+trControl <- trainControl(method  = "cv",
+                          number  = 5)
 
-
+fit <- train(goal~.,
+             method     = "knn",
+             tuneGrid   = expand.grid(k = 1:10),
+             trControl  = trControl,
+             metric     = "Accuracy",
+             data       = data) # SHould I use train data here?????
 
 
 
