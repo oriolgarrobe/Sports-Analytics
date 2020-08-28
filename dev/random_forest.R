@@ -107,9 +107,9 @@ library(kknn)
 # Fit the model
 
 # I want to do some CV in order to choose the best number of neighbours
-a1 <- kknn(formula = as.factor(Spam)~., train = train, test = test, k = 30)
-m.train.a1 <- table(a1$fitted.values, train$Spam)
-m.test.a1 <- table(predict(a1), test$Spam)
+#a1 <- kknn(formula = as.factor(Spam)~., train = train, test = test, k = 30)
+#m.train.a1 <- table(a1$fitted.values, train$Spam)
+#m.test.a1 <- table(predict(a1), test$Spam)
 
 
 # Source: https://stats.stackexchange.com/questions/318968/knn-and-k-folding-in-r
@@ -126,6 +126,14 @@ fit <- train(goal~.,
              metric     = "Accuracy",
              data       = data) # SHould I use train data here?????
 
+predicted_knn <- predict(fit, newdata = test, type = "raw")
+cm_knn <- table(test$goal, predicted_knn)
 
+recall_knn = cm_knn[2,2] / (cm_knn[2,2] + cm_knn[2,1])
+recall_knn
+precision_knn = cm_knn[2,2] / (cm_knn[2,2] + cm_knn[1,2])
+precision_knn
+f1_knn = (2 * recall_knn * precision_knn) / (recall_knn + precision_knn)
+f1_knn
 
 ##########################################

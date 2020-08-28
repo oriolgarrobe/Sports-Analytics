@@ -1,0 +1,123 @@
+---
+title: "Expected Goal Analysis"
+author: "Oriol Garrobé and Dávid Hrabovszki"
+date: "28/08/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Abstract
+
+
+
+# Introduction
+
+Apart from the StatsBomb dataset, trying to go one step further ratings from the players playing are used, since it is believed that are players that in the same circumstances achieve different results. This means that not only the scenario is considered in this project but also the actors. 
+
+# Methods
+
+## Dataset
+
+The project is mainly based on StatsBomb [reference this ????] dataset. This is a free dataset provided in order to new research projects in football analytics. The data from statsBomb includes very detailed and interesting features relevant for the project such as: location of the players on the pitch in any shot - including he position and actions of the Goalkeeper-, detailed information on defensive players applying pressure on the player in possession, or which foot the player on possession uses among others.
+
+The data is provided as JSON files exported from the StatsBomb Data API, in the following structure:
+* Competition and seasons stored in competitions.json.
+* Matches for each competition and season, stored in matches. Each folder within is named for a competition ID, each file is named for a season ID within that competition.
+* Events for each match, stored in events. The file is named for a match ID.
+* Lineups for each match, stored in lineups. The file is named for a match ID.
+
+In particular, the dataset only contains information about F.C. Barcelona games in the spanish national championship La Liga from 2005 up until 2019.
+
+As stated earlier, player skills are also considered in this project. To have an unbiased rate of players, ratings from the most played aroung the world football video game FIFA from EA Sports [reference this] are used. Also, it is considered which is the preferred foot of the player, information sourced from the same database. More in particular, this players information is gotten from *FIFAindex*. 
+
+### Data Preprocessing
+
+Data from StatsBombs comes in JSON format. One easy way to work with JSON data in R is through the **rjson** package that transforms JSON data - which is a combination of nested lists - to nested dataframes. 
+
+The StatsBomb dataset conatining all the relevant information for the project is the **Events** dataset. Each data point in this data set is an event that occurred in a specific game, such as: pass, block, dribble or shots, among others. 
+
+The first step working with the dataset is to erase all the incomplete datapoints or those with wrong information that would afterwards make the models fail. From this point, and because this project is only focused on shots, the dataset is filtered by the variable **type** which contains the type of action of the event. This variable is filtered so only the events regarding shots remain. A **shots** dataset, way lighter than the one used before is created. 
+
+It is important to emphasize on the fact that this dataset contains an extremely useful information which is enclosed in the variable called **shot.freeze_frame**. This **shot.freeze_frame** states where are positioned on the pitch all the players at the moment of the event. It is considered that relevant since allows to make a perfect picture of the scenario at the moment of the shot. 
+
+From this regards, and using the information in **shot.freeze_frame**, a number of new features can be computed and added to the dataset. More in particular, geometric features regarding the position of the striker, the defenders and the goalkeeper are computed. Such features will allow to know, for instance, which is the distance to target of the ball, whether the goalkeeper is properly positioned or if there are defenders close enough to disturb the striker. 
+
+Finally, every data point from the *shots* dataset, containing also the geometric features computed, is complemented with information of the players. For instance, the rates of the striker and the goalkeeper in action are added or whether the player shooting is using his preferred foot or not.
+
+Finally, some features from the **shots** dataset which are not relevant to study are removed, creating a dataset for analysis called **anal** that will be the one used to train the models. The final features in the **anal** dataset are:
+
+**Variable** | **Definition**
+------------ | ----------
+**id** | Numeric. Number representing a unique player.
+**strong_foot** | Boolean. States whether the player use the strong foot or not.
+**overall_rating** | Numeric. Overall rating from FIFA ratings.
+**shot.power** | Numeric. Shot power from FIFA ratings.
+**shot.finishing** | Numeric. Shot finishing from FIFA ratings.
+**gk_rating** | Numeric. Overall rating for goalkeepers from FIFA ratings.
+**gk.reflexes** | Numeric. Goalkeeper reflexes from FIFA ratings.
+**gk.rushing** | Numeric. Goalkeeper rushing from FIFA ratings.
+**gk.handling** | Numeric. Goalkeeper handling from FIFA ratings.
+**gk.positioning** | Numeric. Goalkeeper positioning from FIFA ratings.
+**shot.first_time** | Boolean. States if the shot is the first of the game for the given player.
+**under_pressure** | Boolean. States if the player shooting has opponents close enough to disturb the shot.
+**home** | Boolean. States whether the player shooting is playing home or away.
+**dist** | Numeric. distance to center of the goal from shot taker.
+**angle** | Numeric. angle of the goal from the from shot taker (in degrees).
+**obstacles** | Numeric. number of players (teammates & opponents NOT including GK) between goal and shot taker (inside the triangle of the goalposts and the shot taker).
+**pressure_prox** | Numeric. Distance from closest opponent to shooter.
+**pressure_block** | Boolean. Can the goalkeeper save the shot by being inside the triangle.
+**gk_obstacle** | Boolean. States whether the goalkeeper is between the ball and the goal.
+**gk_pos** | Numeric. goalkeeper's positioning, best if gk is standing on the line that halves the angle of the shot (value between 0 (angle is the same), to 1 (angle is halved).
+**gk_pos_adjusted** | Numeric. same as gk_pos, but it is less strict with shots with a tight angle.
+**gk_dist_from_player** | Numeric. distance between goalkeeper and shot taker.
+**gk_dist_from_goal** | Numeric. distance between goalkeeper and the center of the goal.
+**goal** | Binary. 1 the shot is goal, 0 the shot is not goal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Machine Learning Models
+
+### Logistic Regression
+DAVID
+
+
+### Random Forest and AdaBoost
+
+Both Random Forest and AdaBoost models are very good choices when training a classification model. This models are built on the decision tree model. 
+
+The Random Forest model in particular generates a number of trees based on a bootstrapped subset of the sample and only considering a subset of variables at each step. The result is a wide variety of trees. From this point the data is run over all trees and that yield a decision, the decision given by more trees is the one that prevails. This is called Bagging. To run the Random Forest model, the package **randomForest** [somehow reference this???????????????] from CRAN is used. 
+
+AdaBoost on the other side also generates a number of trees, but only trees that have a root node and two leaves with no children, this trees are called stumps and are not great at making accurate classification, they are weak learners. From this point, once one stump is made the data is run through it, and a decision is made. The errors made by this stump influence when creating the next one and so on. Therefore, some stumps have a greater impact to the model. To run the AdaBoost model, the package **mboost** from CRAN is used.
+
+In order to get the best model possible and not to make it too computational expensive, in both models it is important to choose the optimal number of trees. To do so, both algorithms are run a number of times with different amount of trees. Based on the error rates, the best model in is chosen, and afterwords trained with the data to get the best results possible. In figure [whatever whatever] it can be seen the error rates against the number of trees. The smallest error rate for training data in the Random Forest model appears when 40 trees are created, and for the AdaBoost model it appears when 30 trees are used. Therefore, the final models are set.
+
+$$HERE I WANT TO PUT A COOL GRAPH SHOWING THE ERROR RATES$$
+
+### KNN model
+
+The KNN (K-Nearest Neighbours) model is a classification model that identifies the number k of closest labelled points to the one studying and estimates its class. The class chosen is the one with the bigger amount of neighbors with said class. This is a powerful algorithm but it is very important to choose the optimal number of neighbours, in other words, choose the value of k. This value is chosen with Cross Validation (CV), which is a model validation which partitions the data in complementary subsets, performs analysis on one subsets and validates on the others in order to give a more accurate model. The final number of neighbours used in the KNN algorithm is 9, which gives the best result for prediction. To run the KNN algorithm with CV, the package **kknn** from CRAN is used. 
+
+
+# Results
+
+# Discusion
+
+# Conclusion
+
+# References
+
+
