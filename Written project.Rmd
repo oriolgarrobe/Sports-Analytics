@@ -2,7 +2,9 @@
 title: "Expected Goal Analysis"
 author: "Oriol Garrobé and Dávid Hrabovszki"
 date: "28/08/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -15,7 +17,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-Apart from the StatsBomb dataset, trying to go one step further ratings from the players playing are used, since it is believed that are players that in the same circumstances achieve different results. This means that not only the scenario is considered in this project but also the actors. 
+Trying to play the best football possible in order to win all the titles is a quest that all the best teams in the world follow. Practicing methods have changed, and therefore football istelf. Because of the evolution of technology and the rapidly increasing amount of data - as done in other sports such as baseball - football is introducing datascience techniques to its toobox in order to improve the game. 
+
+Teams use data science and machine learning approaches to analyse which aspects of the games can be improved to become the best team. Artificial intelligence (AI) in sports is very relevant nowadays, and it changed the way coaches approach their practice sessions.
+
+From this point of view, a large number of researchers have worked on sports analytics and in particular in football trying to build the state of the art models to find the hidden insights from the sport that the human eye cannot see by analysing data. 
+
+This project aims to study the probability of scoring of a player when shooting, so professionals can use this approach to look for better positions of shooting - those situations when a player has a big chance of scoring - and avoid those that apparently look good but they have a lower chance of goal. 
+
+As mentioned, there is a bast number of papers regarding football, but there is still room fore more. There are so many aspects of the game that can be analysed, and the game can be heavily improved using AI. From this regards, this project is based in a metric from StatsBomb called expected Goal [reference this shit http://statsbomb.com/wp-content/uploads/2019/10/Benjamin-Larrousse-Improving-Decision-Making-For-Shots.pdf]. The aim is to work over this metric and try to improve it by adding some other variables and try different machine learning models that could give a better result. 
+
+The data used is the datased provided by StatsBomb itself [reference this shit]. Apart from the StatsBomb dataset, aiming to go one step further, ratings from the players in the game are used, since it is believed that are players that in the same circumstances achieve different results. This means that not only the scenario is considered in this project but also the actors. For this purpose player ratings are included to the dataset coming from the FIFA video game. 
+
+A more sophisticated approach to analyse the shot situations in a football game would clearly help practitioners to design more technical interventions and strength and conditioning programmes for players. Accordingly, it is the purpose of this study to develop and validate a machine learning algorithm to identify the best shooting situations for players. 
 
 # Methods
 
@@ -49,45 +63,34 @@ Finally, every data point from the *shots* dataset, containing also the geometri
 
 Finally, some features from the **shots** dataset which are not relevant to study are removed, creating a dataset for analysis called **anal** that will be the one used to train the models. The final features in the **anal** dataset are:
 
-**Variable** | **Definition**
------------- | ----------
-**id** | Numeric. Number representing a unique player.
-**strong_foot** | Boolean. States whether the player use the strong foot or not.
-**overall_rating** | Numeric. Overall rating from FIFA ratings.
-**shot.power** | Numeric. Shot power from FIFA ratings.
-**shot.finishing** | Numeric. Shot finishing from FIFA ratings.
-**gk_rating** | Numeric. Overall rating for goalkeepers from FIFA ratings.
-**gk.reflexes** | Numeric. Goalkeeper reflexes from FIFA ratings.
-**gk.rushing** | Numeric. Goalkeeper rushing from FIFA ratings.
-**gk.handling** | Numeric. Goalkeeper handling from FIFA ratings.
-**gk.positioning** | Numeric. Goalkeeper positioning from FIFA ratings.
-**shot.first_time** | Boolean. States if the shot is the first of the game for the given player.
-**under_pressure** | Boolean. States if the player shooting has opponents close enough to disturb the shot.
-**home** | Boolean. States whether the player shooting is playing home or away.
-**dist** | Numeric. distance to center of the goal from shot taker.
-**angle** | Numeric. angle of the goal from the from shot taker (in degrees).
-**obstacles** | Numeric. number of players (teammates & opponents NOT including GK) between goal and shot taker (inside the triangle of the goalposts and the shot taker).
-**pressure_prox** | Numeric. Distance from closest opponent to shooter.
-**pressure_block** | Boolean. Can the goalkeeper save the shot by being inside the triangle.
-**gk_obstacle** | Boolean. States whether the goalkeeper is between the ball and the goal.
-**gk_pos** | Numeric. goalkeeper's positioning, best if gk is standing on the line that halves the angle of the shot (value between 0 (angle is the same), to 1 (angle is halved).
-**gk_pos_adjusted** | Numeric. same as gk_pos, but it is less strict with shots with a tight angle.
-**gk_dist_from_player** | Numeric. distance between goalkeeper and shot taker.
-**gk_dist_from_goal** | Numeric. distance between goalkeeper and the center of the goal.
-**goal** | Binary. 1 the shot is goal, 0 the shot is not goal.
+|**Variable** | **Definition**
+|------------ | -------------------------------------------|
+|**id** | Numeric. Number representing a unique player.|
+|**strong_foot** | Boolean. States whether the player use the strong foot or not.|
+|**overall_rating** | Numeric. Overall rating from FIFA ratings.|
+|**shot.power** | Numeric. Shot power from FIFA ratings.|
+|**shot.finishing** | Numeric. Shot finishing from FIFA ratings.|
+|**gk_rating** | Numeric. Overall rating for goalkeepers from FIFA ratings.|
+|**gk.reflexes** | Numeric. Goalkeeper reflexes from FIFA ratings.|
+|**gk.rushing** | Numeric. Goalkeeper rushing from FIFA ratings.|
+|**gk.handling** | Numeric. Goalkeeper handling from FIFA ratings.|
+|**gk.positioning** | Numeric. Goalkeeper positioning from FIFA ratings.|
+|**shot.first_time** | Boolean. States if the shot is the first of the game for the given player.|
+|**under_pressure** | Boolean. States if the player shooting has opponents close enough to disturb the shot.|
+|**home** | Boolean. States whether the player shooting is playing home or away.|
+|**dist** | Numeric. distance to center of the goal from shot taker.|
+|**angle** | Numeric. angle of the goal from the from shot taker (in degrees).|
+|**obstacles** | Numeric. number of players (teammates & opponents NOT including GK) between goal and shot taker (inside the triangle of the goalposts and the shot taker).|
+|**pressure_prox** | Numeric. Distance from closest opponent to shooter.|
+|**pressure_block** | Boolean. Can the goalkeeper save the shot by being inside the triangle.|
+|**gk_obstacle** | Boolean. States whether the goalkeeper is between the ball and the goal.|
+|**gk_pos** | Numeric. goalkeeper's positioning, best if gk is standing on the line that halves the angle of the shot (value between 0 (angle is the same), to 1 (angle is halved).|
+|**gk_pos_adjusted** | Numeric. same as gk_pos, but it is less strict with shots with a tight angle.|
+|**gk_dist_from_player** | Numeric. distance between goalkeeper and shot taker.|
+|**gk_dist_from_goal** | Numeric. distance between goalkeeper and the center of the goal.|
+|**goal** | Binary. 1 the shot is goal, 0 the shot is not goal.|
 
-
-
-
-
-
-
-
-
-
-
-
-
+  
 
 ## Machine Learning Models
 
@@ -116,7 +119,18 @@ The KNN (K-Nearest Neighbours) model is a classification model that identifies t
 
 # Discusion
 
+- choose the best model
+- do something with the best model, such as showing that some playes score when they shouldn't or choose the best player for the given situation
+- future work (feture engineering, neural nets, more variables???, not only shots but also passes or whatever)
+- the results obtained can be used not only to improve the strikers success but also to improve the defensive positioning or to evaluate goalie skills
+- reference some papers that are close and find differenes?? or similarities??
+
+
 # Conclusion
+
+Football is a very demanding sport, and the high impact that it has in society makes teams strive for perfection. From this point, game demands are extensively analysed and new concepts coming from data science are introduced to coaches plans. This projects created a classifier that provides more information regarding the shooting positions of players. It intends to help players choose wiser when shooting, or in the other hand to advise them not to shoot when the chances are very low and a pass could create a better situation. Also it provides information, as in this project not only the situation but the players involved are studied, about which palyers should take which shots. It is commonly known that best players take more shots, but there are situations where a player which apparently is not that good is the best fit for that particular shot in that particular situation.
+
+The algorithm, built on a simple logistic regression and only 25 relevant features classified the Scoring Probability with a combined precision and recall of 35.24% (F1-score), a recall of 23.72% and an accuracy of 85.89% improving the results of the xG study from statsBomb. This study tries to improve the football analysis comunity and football itself providing a tool to assess shooting scenarios in professional football. 
 
 # References
 
