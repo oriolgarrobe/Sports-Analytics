@@ -117,12 +117,43 @@ The KNN (K-Nearest Neighbours) model is a classification model that identifies t
 
 # Results
 
+* **Accuracy**. Stands for the ratio of correctly predicted observation over the total observations. If it is high it means that there are a lot of good predictions but it must be taken into account that for assymetric datasets or uneven classes - those where one class is larger than the other - it can be biased. In particular, in the dataset used there are way less shots that ended up being a goal than those that not. So, with a naive predictor all the datapoints could have been set to not goal/miss and the accuracy would have been still high. That is other metrics must be used in order to take this into account. 
+
+* **Recall**. Otherwise called sensitivity, stands for the correctly predicted positive observations to all observations in an actual class. This metric checks how many properly predicted points are predicted within a class, in this case **goal**. This means that it tries to show how many predicted goals are actually goals. Since in football there are not many goals, it is a very innacurate metric, as many times a situation that should clearly end up in goal in the end is not. This is why this one is not a very indicative metric for the purposes or the project. However, it is good to compute it in order to get some conclusions.
+
+* **F1-score**. This metric is a weighted average of precision and recall, being precision the number of properly predicted observations in a class over all the observations fom that class. From this point, it takes both false positives and false negatives into account too, it is very useful when the goal is to predict uneven classes. In this case, as there are way more observations that are not goal than those that are goal, this metric is the one that mirrors best the quality of the algorithm. 
+
+|**Model** | **Accuracy** | **Recall** | **F1-Score** |
+---------- | ----------   | ---------- | ----------   |
+**xG StatsBomb** | 86.36% | 21.79% | 34.09%
+**Logistic Regression** | 85.89% | 23.72% | 35.24%
+**Random Forest** | 60.00% | 22.05% | 32.24%
+**AdaBoost** | 83.33% | 11.18% | 19.71%
+**K-NN** | 68.50% | 27.79% | 39.54%
+
 # Discusion
 
-- choose the best model
-- do something with the best model, such as showing that some playes score when they shouldn't or choose the best player for the given situation
+In this study, a Machine Learning algorithm to quantify the probability of a football player scoring is develooped, using the positioning of the players in the pitch and their skills. 4 classification approaches using 25 variables which derived from the particular scenario at the moment of the shot were examined. It has been proven that it is possible to classify whether a shot is going to be a goal or not with good accuracy, being the best performing method the logistic regression with an F-1 score of 35.24%, a recall of 23.72% and an accuracy of 85.89%. It also has improved the xG metric from statsBomb by adding player skills to the dataset and testing other Machine Learning approaches. This will provide professional of the sport such as players, coaches or managers some insights from the game that can be very useful to improve their performance. 
+
+Models based on decision trees such as Random Forest or AdaBoost provided mixed results that did not improve the previous works on the field. In particular, the optimal Random Forest algorithm with 40 trees yielded an F1-score of 32.24%, a recall of 22.05% and an accuracy of 60%. Looking at this results, it can be seen that eventhough the F1-Score is close to the one from xG, the overall accuracy is poorer, which means that many shots that were classified as miss where actually a goal. On the other hand, the optimal AdaBoost algorithm with 30 trees yielded an F1-score of 19.71%, a recall of 11.18% and an accuracy of 83.33%. All the results are worst than the xG metric, bringing no improvement to the field. This model failed as almost no goals were predicted, only 11.18% (recall) of the goals were predicted properly. From this point of view, these two algorithms do not bring improvements to the field or relevant information that can be used to improve the game.
+
+Another model used to classfy goals is the K-NN algorithm. This algorithm yielded better results than models based on decision trees with an F1-score of 39.54%, a recall of 27.79% and an accuracy of 68.50%. It has the best F1-Score of all models used and also improves the xG metric. As stated before, the F1-score is the metric that mirrors best the quality of this algorithm, and this method could be the one chosen for the project. It also has the best recall among all the models. However, it has a relevant lower overall accuracy compared to xG or Logistic Regression. It yields a better F1-score and a better recall due the fact that predicts many more situations as goals than Random Forest, Adaboost or xG. However, many situations that were not goal were classified as goal, this is why this model has a lot of room to improve. 
+
+Finally, ### HERE WRITE ABOUT WHY WE CHOOSE LOGISTIC REGRESSION
+
+- do something with the best model, such as showing that some players score when they shouldn't or choose the best player for the given situation
+
+
+The limitations of this study must be acknowledged. The data sample consist only of **F.C. Barcelona** games in the national regular season **La Liga**. From this regards, barcelona players, which are know to be very effective and playing against most likely worst teams can lead to some biased results. It is also worth to be mentioned than as the dataset starts in 2005, many of the shots are done by **Leo Messi**, for many the best player in history and definetly on of the best strikers of all times. This can also lead to not very relevant results for the football comunity. This is why this project used player ratings, as an attempt to introduce this information to the models, that can be used therefore at all levels. It would be good therefore, to add more shot situations from many different competitions from different countries and different teams. This would give a more realistic dataset and also it would provide more data points that would definetly help train the algorithm, probably achieving better results. 
+
+Another possible improvement would be to create more variables. With the dataset provided the authors created a data set that comprised all those variables that could have an effect on the result of the shot. New variables were computed giving a proper dataset to work on. However, more variables could have been added or created. With more variables, a better picture of the situation of the shot is drawn, and by practicing **Feature Engineering** a better dataset could have been created. With this new dataset other Machine Learning approaches, more modern and complex could have been applied. For instance, would be good to train a Neural Net in order to predict goals. In order to do so high computational resources are needed, that is why Neural Nets are not used in this studio, but could probably improve the results. 
+
+Another improvement to the study would be to apply the same methods to other types of events other than **shots**, such as success in **passes** or **tackles**. This would provide information not only to the strikers but to every player in the field, improving - as this is the final aim of Football Analysis - the game. 
+
+
+
 - future work (feture engineering, neural nets, more variables???, not only shots but also passes or whatever)
-- the results obtained can be used not only to improve the strikers success but also to improve the defensive positioning or to evaluate goalie skills
+- the results obtained can be used not only to improve the strikers success but also to improve the defensive positioning or to evaluate goalie skills (WHERE TO WRITE THIS?? IN DISCUSSION OR IN CONCLUSION???)
 - reference some papers that are close and find differenes?? or similarities??
 
 
