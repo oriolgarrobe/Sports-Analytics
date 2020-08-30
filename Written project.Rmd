@@ -31,6 +31,11 @@ The data used is the datased provided by StatsBomb itself [reference this shit].
 
 A more sophisticated approach to analyse the shot situations in a football game would clearly help practitioners to design more technical interventions and strength and conditioning programmes for players. Accordingly, it is the purpose of this study to develop and validate a machine learning algorithm to identify the best shooting situations for players. 
 
+# Related work
+
+
+
+
 # Methods
 
 ## Dataset
@@ -45,21 +50,21 @@ The data is provided as JSON files exported from the StatsBomb Data API, in the 
 
 In particular, the dataset only contains information about F.C. Barcelona games in the spanish national championship La Liga from 2005 up until 2019.
 
-As stated earlier, player skills are also considered in this project. To have an unbiased rate of players, ratings from the most played aroung the world football video game FIFA from EA Sports [reference this] are used. Also, it is considered which is the preferred foot of the player, information sourced from the same database. More in particular, this players information is gotten from *FIFAindex*. 
+As stated earlier, player skills are also considered in this project. To have an unbiased rate of players, ratings from the most played around the world football video game FIFA from EA Sports [reference this] are used. Also, it is considered which is the preferred foot of the player, information sourced from the same database. More in particular, this players information is gotten from *FIFAindex*. 
 
 ### Data Preprocessing
 
-Data from StatsBombs comes in JSON format. One easy way to work with JSON data in R is through the **rjson** package that transforms JSON data - which is a combination of nested lists - to nested dataframes. 
+Data from StatsBombs comes in JSON format. One easy way to work with JSON data in R is through the **jsonlite** package that transforms JSON data - which is a combination of nested lists - to nested dataframes. 
 
-The StatsBomb dataset conatining all the relevant information for the project is the **Events** dataset. Each data point in this data set is an event that occurred in a specific game, such as: pass, block, dribble or shots, among others. 
+The StatsBomb dataset containing all the relevant information for the project is the **Events** dataset. Each data point in this data set is an event that occurred in a specific game, such as: pass, block, dribble or shots, among others. 
 
 The first step working with the dataset is to erase all the incomplete datapoints or those with wrong information that would afterwards make the models fail. From this point, and because this project is only focused on shots, the dataset is filtered by the variable **type** which contains the type of action of the event. This variable is filtered so only the events regarding shots remain. A **shots** dataset, way lighter than the one used before is created. 
 
-It is important to emphasize on the fact that this dataset contains an extremely useful information which is enclosed in the variable called **shot.freeze_frame**. This **shot.freeze_frame** states where are positioned on the pitch all the players at the moment of the event. It is considered that relevant since allows to make a perfect picture of the scenario at the moment of the shot. 
+It is important to emphasize on the fact that this dataset contains an extremely useful information which is enclosed in the variable called **shot.freeze_frame**. This **shot.freeze_frame** states where all the players are positioned on the pitch at the moment of the event. It is considered that relevant since it allows to make a perfect picture of the scenario at the moment of the shot. 
 
 From this regards, and using the information in **shot.freeze_frame**, a number of new features can be computed and added to the dataset. More in particular, geometric features regarding the position of the striker, the defenders and the goalkeeper are computed. Such features will allow to know, for instance, which is the distance to target of the ball, whether the goalkeeper is properly positioned or if there are defenders close enough to disturb the striker. 
 
-Finally, every data point from the *shots* dataset, containing also the geometric features computed, is complemented with information of the players. For instance, the rates of the striker and the goalkeeper in action are added or whether the player shooting is using his preferred foot or not.
+Finally, every data point from the *shots* dataset, containing also the geometric features computed, is complemented with information of the players. For instance, the ratings of the striker and the goalkeeper in action are added or whether the player shooting is using his preferred foot or not.
 
 Finally, some features from the **shots** dataset which are not relevant to study are removed, creating a dataset for analysis called **anal** that will be the one used to train the models. The final features in the **anal** dataset are:
 
@@ -90,7 +95,128 @@ Finally, some features from the **shots** dataset which are not relevant to stud
 |**gk_dist_from_goal** | Numeric. distance between goalkeeper and the center of the goal.|
 |**goal** | Binary. 1 the shot is goal, 0 the shot is not goal.|
 
-  
+### Feature engineering
+
+We created new features based on player locations for every shot in the dataset, similar to traditional xG metrics. The difference is that we calculated many more variables that the traditional approaches do not take into account. The statsbomb dataset contains the x and y coordinates of the shooter and other players that are relevant to the shot (both teammates and opponents including the goalkeeper). In the next part we explain what features we created and how.
+
+
+#### Distance
+
+Euclidean distance between the shooter and the center of the goal.
+
+#### Angle
+
+Angle of the goal from the shooter’s point of view in degrees. Picturing a triangle, where one side is the goal line and the other two are the imaginary lines connecting each goalpost to the shooter, we need the angle opposite of the goal line. We used the following formula:
+```{r include=TRUE, eval=FALSE}
+angle = acos((b^2 + c^2 - a^2) / (2*b*c)) * 180 / pi
+```
+
+
+where a is the goal line, and b and c are the imaginary lines between the shooter and the posts.
+Source: https://www.omnicalculator.com/math/triangle-angle#how-to-find-the-angle-of-a-triangle
+
+#### Obstacles
+
+Number of players (teammates and opponents not including the opponent goalkeeper) between the goal and shooter – in other words, inside the triangle defined by the shooter and the goalposts. To calculate this, we first need to evaluate if a player is inside said triangle or not. If the area of this triangle is equal to the sum of the partial triangles defined by:
+
+1. The shooter, one goalpost and the player being evaluated
+
+2. The shooter, the other goalpost and the player being evaluated
+
+3. The two goalposts and the player being evaluated
+
+Then we conclude that the player being evaluated is inside the main triangle, therefore he is an obstacle.
+To calculate the area of a triangle based on the coordinates of its points, we used the following formula in R:
+
+```{r include=TRUE, eval=FALSE}
+area = abs((a[1] * (b[2]-c[2]) + b[1] * (c[2]-a[2]) + c[1] * (a[2]-b[2])) / 2)
+```
+
+
+where a, b and c are numeric vectors of length 2 representing the points of the triangle.
+Source: https://www.geeksforgeeks.org/check-whether-a-given-point-lies-inside-a-triangle-or-not/
+
+#### Pressure proximity
+
+The Euclidean distance between the shooter and the opponent closest to him.
+
+#### Pressure block
+
+The closest opponent’s physical ability to block the shot by being inside the triangle defined by the shooter and the goalposts. Boolean value.
+
+#### Goalkeeper obstacle
+
+The opponent goalkeeper’s physical ability to save the shot by being inside the triangle defined by the shooter and the goalposts. Boolean value.
+
+#### Goalkeeper positioning
+
+Positioning of the opponent goalkeeper. The value is between 0 and 1, where a value of 1 means that the goalkeeper halves the angle of the shot, while a value of 0 means that the angle remains the same. This does not take into account if the goalkeeper is standing on the line or right in front of the shooter, only that he is positioned on the line that halves the angle of the shot. A larger kernel width means that the kernel distinguishes less between bad and good goalkeeper positioning, while a small value means that only split angles close to 0.5 can get a good mark for goalkeeper positioning, as it can be observed on Figure \ref{fig:gauss_kernel}. We used a kernel width of 0.2 for this feature.
+
+```{r, echo = FALSE, eval = TRUE, fig.cap="\\label{fig:gauss_kernel} Gaussian kernels that give more weight to values around 0.5 (good split angle by the goalkeeper). Kernel width controls how strict the kernel is.", out.width = "100%", fig.height = 5, fig.width = 12, fig.pos='!h', fig.align='center'}
+source("dev/helper_functions/gauss_kernel.R")
+par(mfrow=c(1,2))
+perc_diff = seq(0,1, by = 0.001)
+h2 = 0.2
+kernel2 =  exp(-((perc_diff - 0.5)/h2)^2)
+plot(perc_diff, kernel2, type = 'l', main = "Kernel width = 0.2", xlab = "", ylim = c(0,1), ylab = "kernel value")
+abline(v = 0.5, col = 'blue')
+
+
+perc_diff = seq(0,1, by = 0.001)
+h2 = 1
+kernel2 =  exp(-((perc_diff - 0.5)/h2)^2)
+plot(perc_diff, kernel2, type = 'l', main = "Kernel width = 1", xlab = "", ylim = c(0,1), ylab = "kernel value")
+abline(v = 0.5, col = 'blue')
+```
+
+
+This feature was not included in the analysis, because it proved to be too strict when dealing with tighter shots.
+
+#### Goalkeeper positioning adjusted
+
+Very similar to Goalkeeper positioning, but this feature is adjusted with the shot angle, meaning that it takes into account the full shot angle when evaluating goalkeeper positioning. This is necessary, because the previous variable was too strict when it came to tight shots, and it gave a bad value for the goalkeeper, even though he was still positioned pretty well. For example, if the angle of the shot was 5 degrees, the goalkeeper should not be given a bad mark for his positioning if he splits the angle to 1 and 4 degrees. With such tight angles, it does not really matter where he stands, as long as he is obstructing the goal, of course.
+
+We solved this problem by introducing another Gaussian kernel that gives a high output value for small input values (shot angles) and outputs a value close to 0.2 for larger input values (shot angles). The kernel width in this case was chosen to be 20. Then, this kernel value was used as the kernel width for the original Gaussian kernel described above in the previous feature. This way we achieved that the Goalkeeper positioning adjusted feature is more lenient towards tight shots than Goalkeeper positioning, thus more accurate in evaluating real life goalkeeper positioning.
+
+
+```{r, echo = FALSE, eval = TRUE, fig.cap="\\label{fig:gauss_kernel_adjust} Adjusting Gaussian kernel that gives more weight to lower values (shot angles)", out.width = "65%", fig.pos='!h', fig.align='center'}
+source("dev/helper_functions/gauss_kernel.R")
+x = seq(0,180, by = 0.01)
+h3 = 20
+kernel3 =  exp(-((x)/h3)^2)+0.2
+plot(x, kernel3, type = 'l', main = "", xlab = "", ylim = c(0,2), ylab = "kernel value")
+abline(v = 37, col = 'blue')
+```
+
+
+
+#### Goalkeeper distance from player
+
+Euclidean distance between shooter and goalkeeper.
+
+#### Goalkeeper distance from goal
+
+Euclidean distance between center of the goal and goalkeeper.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Machine Learning Models
 
