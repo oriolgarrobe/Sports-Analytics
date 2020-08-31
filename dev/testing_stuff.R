@@ -23,9 +23,16 @@ source("dev/helper_functions/plot_shot.R")
 source("dev/helper_functions/plot_pitch.R")
 
 ### plot shot by index
-index = '607646b4-ec84-4629-8728-e5ba6e71bf2b'
-plot_shot(index = index, df = shots, full_pitch = T)
+#index = '607646b4-ec84-4629-8728-e5ba6e71bf2b' # dani alves rocket
+index = '1f85a34c-9689-4036-9fb1-133918d42a25' # dani alves rocket 2
+index = '2066b8f0-fb76-4844-a626-489ccc315fc2' # neymar miss
+index = 'd4c5e93b-aee7-43c9-a8a1-0dde6a8d7dda' # guily miss
+index = '3c18d70f-2253-41cf-80ad-8d863cef4db8' # etoo miss
+index = '89be0308-3b31-481d-8af5-ac7bd324a863' # messi goal
+index = 'e43c92e3-70fc-4e32-b055-bf4666080caf' # messi goal
+
 plot_shot(index = index, df = shots, full_pitch = F)
+plot_shot(index = index, df = shots, full_pitch = T)
 plot_pitch(index = index, df = shots)
 
 ## geom features by index
