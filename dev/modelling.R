@@ -72,6 +72,22 @@ f1_statsbomb
 ## on baseline, statsbomb's F1 is 34.09%, which is lower than logreg (35.24%)
 
 
+
+### create predictions for all shots
+fitted_full <- predict(model,newdata = subset(anal, select = c(2:23)),type='response')
+fitted_full_bool <- ifelse(fitted_full > 0.5,1,0)
+
+anal$pred_bool <- fitted_full_bool
+anal$pred <- fitted_full
+anal <- anal %>% left_join(statsbomb_xg, by = 'id')
+anal$shot.statsbomb_xg_bool = ifelse(anal$shot.statsbomb_xg > 0.5,1,0)
+
+misClasificError <- mean(anal$pred_bool != anal$goal)
+print(paste('Accuracy',1-misClasificError))
+
+### save anal dataframe for future use
+save(anal,file="dev/anal.Rda")
+
 ### related papers
 
 # logistic regression on all events (not just shots)
@@ -88,3 +104,18 @@ f1_statsbomb
 
 ### sources
 # https://machinelearningmastery.com/probability-metrics-for-imbalanced-classification/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
