@@ -9,6 +9,8 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
 ```
 
 # Abstract
@@ -266,8 +268,36 @@ Models based on decision trees such as Random Forest or AdaBoost provided mixed 
 Another model used to classfy goals is the K-NN algorithm. This algorithm yielded better results than models based on decision trees with an F1-score of 39.54%, a recall of 27.79% and an accuracy of 68.50%. It has the best F1-Score of all models used and also improves the xG metric. As stated before, the F1-score is the metric that mirrors best the quality of this algorithm, and this method could be the one chosen for the project. It also has the best recall among all the models. However, it has a relevant lower overall accuracy compared to xG or Logistic Regression. It yields a better F1-score and a better recall due the fact that predicts many more situations as goals than Random Forest, Adaboost or xG. However, many situations that were not goal were classified as goal, this is why this model has a lot of room to improve. 
 
 Finally, ### HERE WRITE ABOUT WHY WE CHOOSE LOGISTIC REGRESSION
+Notes: could have lowered threshold below 50% to get more predicted goals, but it doesn't make sense, and lowers accuracy (check if it lowers F1 score)
 
 - do something with the best model, such as showing that some players score when they shouldn't or choose the best player for the given situation
+
+## Player performances
+
+In the previous sections we created models to predict goals, chose the best one, and now we are going to interpret the results on the player's level. We aim to find out how well each player performs from the aspect of converting shots to goals. We suspect that there are players that score more goals than they are expected to, and there are some that score fewer. It is important to note, that the database we used for analysis had 1044 goals, while we only predicted 320 goals with our best model for the whole dataset. Therefore, to make the amount of actual and predicted goals by each player comparable, we scaled up the amount of predicted goals for the sake of this performance analysis, so they also sum up to 1044.
+
+The results can be observed in the table below, which is ordered by the amount of goals scored. It is no surprise that Messi scored 33.85 more goals (11% more) than he should have, based on his chances. This is in line with our belief that he is a very efficient striker. Even more efficient than Messi are Ivan Rakitic and Daniel Alves. The latter player is primarily a defender, but still managed to score 11 goals, even though none were predicted for him.
+
+The most underperforming players, when it comes to converting chances, were Samuel Eto'o and Zlatan Ibrahimovic. Luis Suárez also scored much fewer goals (27.76), than expected.
+
+```{r echo = FALSE, eval = TRUE}
+load("dev/players.Rda")
+
+table <- players %>% filter(sum_goals_actual>10) %>% arrange(desc(sum_goals_actual))
+table$sum_goals_pred = round(table$sum_goals_pred,2)
+table$sum_goals_actual = round(table$sum_goals_actual,2)
+table$actual_to_prediction_amount = round(table$actual_to_prediction_amount,2)
+table$diff_to_prediction_percent = round(table$diff_to_prediction_percent,2)
+
+colnames(table) <- c('Name', "Goals predicted (scaled up)", "Goals scored", "Diff. (amount)", "Diff. (ratio)")
+kable(table, caption = "Player performances (who scored more than 10 goals)")
+```
+
+The next section will present some shots visually that might help explain these differences.
+
+## Visualising shots
+
+
 
 
 The limitations of this study must be acknowledged. The data sample consist only of **F.C. Barcelona** games in the national regular season **La Liga**. From this regards, barcelona players, which are know to be very effective and playing against most likely worst teams can lead to some biased results. It is also worth to be mentioned than as the dataset starts in 2005, many of the shots are done by **Leo Messi**, for many the best player in history and definetly on of the best strikers of all times. This can also lead to not very relevant results for the football comunity. This is why this project used player ratings, as an attempt to introduce this information to the models, that can be used therefore at all levels. It would be good therefore, to add more shot situations from many different competitions from different countries and different teams. This would give a more realistic dataset and also it would provide more data points that would definetly help train the algorithm, probably achieving better results. 

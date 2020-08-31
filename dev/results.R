@@ -34,3 +34,6 @@ players <- players %>% mutate(diff_to_prediction_percent = actual_to_prediction_
 
 ### save players dataframe for future use
 save(players,file="dev/players.Rda")
+
+players %>% filter(sum_goals_actual>10) %>% arrange(desc(sum_goals_actual))
+
