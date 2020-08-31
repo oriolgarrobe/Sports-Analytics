@@ -9,6 +9,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 library(tidyverse)
 library(knitr)
 ```
@@ -297,8 +298,64 @@ The next section will present some shots visually that might help explain these 
 
 ## Visualising shots
 
+Now we plot some of the shots to illustrate how such differences can occur between reality and prediction, and also to show some chances that had a high Scoring Probability, but were missed, or had a low probability, but still went in. We used the package **soccermatics** (REFEERENCE!!!!!!!!!) to plot the empty pitch, and then we wrote our own function that places the players and the shot itself on the pitch.
+
+Figures \ref{fig:alves1} and \ref{fig:alves2} show two goals from Daniel Alves that he scored against the odds. These efforts contribute to him performing much better, than expected (see the table in the previous section).
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, fig.cap="\\label{fig:alves1} Daniel Alves goal (Scoring Probability =  0.029)", out.width = "65%", fig.pos='!h', fig.align='center'}
+library(soccermatics)
+source("dev/helper_functions/plot_shot.R")
+load("dev/shots.Rda")
+
+alves1 = '607646b4-ec84-4629-8728-e5ba6e71bf2b' # dani alves rocket
+
+plot_shot(index = alves1, df = shots, full_pitch = F)
+```
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, fig.cap="\\label{fig:alves2} Daniel Alves goal (Scoring Probability =  0.038)", out.width = "65%", fig.pos='!h', fig.align='center'}
+
+alves2 = '1f85a34c-9689-4036-9fb1-133918d42a25' # dani alves rocket 2
+
+plot_shot(index = alves2, df = shots, full_pitch = F)
+```
+
+\newpage
+
+Other shots however, were not converted despite having a large Scoring Probability. Ludovic Giuly's header for example flew over the crossbar (Figure \ref{fig:giuly}).
 
 
+```{r echo = FALSE, eval = TRUE, message = FALSE, fig.cap="\\label{fig:giuly} Ludovic Giuly miss (Scoring Probability =  0.886)", out.width = "65%", fig.pos='!h', fig.align='center'}
+
+giuly = 'd4c5e93b-aee7-43c9-a8a1-0dde6a8d7dda' # giuly miss
+
+plot_shot(index = giuly, df = shots, full_pitch = F)
+```
+
+Samuel Eto'o failed to score from a relatively easy position (Figure \ref{fig:etoo}) against Real Madrid.
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, fig.cap="\\label{fig:etoo} Samuel Eto'o miss (Scoring Probability =  0.823)", out.width = "65%", fig.pos='!h', fig.align='center'}
+
+etoo = '3c18d70f-2253-41cf-80ad-8d863cef4db8' # etoo miss
+
+plot_shot(index = etoo, df = shots, full_pitch = F)
+```
+
+\newpage
+
+Finally a typical Lionel Messi goal against Levante, where he had less than 50% probability of scoring, but still managed to put the ball into the net.
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, fig.cap="\\label{fig:messi} Lionel Messi goal (Scoring Probability =  0.120)", out.width = "65%", fig.pos='!h', fig.align='center'}
+
+messi = 'e43c92e3-70fc-4e32-b055-bf4666080caf' # messi goal
+
+plot_shot(index = messi, df = shots, full_pitch = F)
+```
+
+
+
+\newpage
+
+# Future improvements
 
 The limitations of this study must be acknowledged. The data sample consist only of **F.C. Barcelona** games in the national regular season **La Liga**. From this regards, barcelona players, which are know to be very effective and playing against most likely worst teams can lead to some biased results. It is also worth to be mentioned than as the dataset starts in 2005, many of the shots are done by **Leo Messi**, for many the best player in history and definetly on of the best strikers of all times. This can also lead to not very relevant results for the football comunity. This is why this project used player ratings, as an attempt to introduce this information to the models, that can be used therefore at all levels. It would be good therefore, to add more shot situations from many different competitions from different countries and different teams. This would give a more realistic dataset and also it would provide more data points that would definetly help train the algorithm, probably achieving better results. 
 

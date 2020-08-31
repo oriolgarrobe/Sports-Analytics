@@ -60,6 +60,7 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, full
     player_name = ''
     xg = NA_real_
     outcome = NA
+    opponent_team = ''
     
     
   } else {
@@ -78,6 +79,7 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, full
     xg = row$shot.statsbomb_xg
     shot_end_location = unlist(row$shot.end_location)[1:2]
     outcome = row$goal
+    opponent_team = row$opponent_team
     
     
     # add shot end location to players df
@@ -141,9 +143,10 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, full
                     widthPitch = width,
                     arrow = 'none', 
                     title = paste0(player_name, 
-                                   ifelse(outcome == 1, ' GOAL', ' MISS'),
-                                   ', xG = ',
-                                   ifelse(is.na(xg), 'unknown', round(xg,3))), 
+                                   ifelse(outcome == 1, ' GOAL', ' MISS')
+                                   #,', xG = ',ifelse(is.na(xg), 'unknown', round(xg,3))
+                                   , ' vs ', opponent_team
+                                   ), 
                     subtitle = NULL, 
                     theme = "grass") + 
       # add active player location
@@ -192,9 +195,10 @@ plot_shot <- function(active_player = NA, passive_players = NA, index = NA, full
                         widthPitch = 80,
                         arrow = 'none', 
                         title = paste0(player_name, 
-                                       ifelse(outcome == 1, ' GOAL', ' MISS'),
-                                       ', xG = ',
-                                       ifelse(is.na(xg), 'unknown', round(xg,3))), 
+                                       ifelse(outcome == 1, ' GOAL', ' MISS')
+                                       #,', xG = ',ifelse(is.na(xg), 'unknown', round(xg,3))
+                                       , ' vs ', opponent_team
+                                       ), 
                         subtitle = NULL, 
                         theme = "grass") + 
       # add active player location
