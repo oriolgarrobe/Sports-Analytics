@@ -33,8 +33,32 @@ model <- glm(goal ~ .,family=binomial(link='logit'), data = subset(train, select
 summary(model)
 
 fitted <- predict(model,newdata = subset(test, select = c(2:23)),type='response')
-fitted_bool <- ifelse(fitted > 0.5,1,0)
 
+
+# find out which threshold value is best
+thresholds = matrix(nrow=5, ncol = 9) # rows = (accuracy, recall, precision, f1)
+thresholds[1,] = seq(0.1,0.9,by = 0.1)
+
+for (i in 1:9) {
+  t = thresholds[1,i]
+  fitted_bool <- ifelse(fitted > t,1,0)
+  
+  cm_fitted = table(test$goal, fitted_bool)
+  
+  thresholds[2,i] = 1-mean(fitted_bool != test$goal)
+  thresholds[3,i] = cm_fitted[2,2] / (cm_fitted[2,2] + cm_fitted[2,1])
+  thresholds[4,i] = cm_fitted[2,2] / (cm_fitted[2,2] + cm_fitted[1,2])
+  thresholds[5,i] = (2 * thresholds[3,i] * thresholds[4,i]) / (thresholds[3,i] + thresholds[4,i])
+}
+
+thresholds <- t(thresholds)
+
+thresholds <- as.data.frame(thresholds)
+colnames(thresholds) <- c('Threshold', 'Accuracy', 'Recall', 'Precision', 'F1 Score')
+thresholds[,2:5] <- round(thresholds[,2:5],4)
+
+
+fitted_bool <- ifelse(fitted > 0.5,1,0)
 misClasificError <- mean(fitted_bool != test$goal)
 print(paste('Accuracy',1-misClasificError))
 cm_fitted = table(test$goal, fitted_bool)
