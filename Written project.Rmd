@@ -5,6 +5,7 @@ date: "28/08/2020"
 output:
   pdf_document: default
   html_document: default
+bibliography: bibliopaper.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -28,7 +29,7 @@ From this point of view, a large number of researchers have worked on sports ana
 
 This project aims to study the probability of scoring of a player when shooting, so professionals can use this approach to look for better positions of shooting - those situations when a player has a big chance of scoring - and avoid those that apparently look good but they have a lower chance of goal. 
 
-As mentioned, there is a bast number of papers regarding football, but there is still room fore more. There are so many aspects of the game that can be analysed, and the game can be heavily improved using AI. From this regards, this project is based in a metric from StatsBomb called expected Goal [reference this shit http://statsbomb.com/wp-content/uploads/2019/10/Benjamin-Larrousse-Improving-Decision-Making-For-Shots.pdf]. The aim is to work over this metric and try to improve it by adding some other variables and try different machine learning models that could give a better result. 
+As mentioned, there is a bast number of papers regarding football, but there is still room fore more. There are so many aspects of the game that can be analysed, and the game can be heavily improved using AI. From this regards, this project is based in a metric from StatsBomb called expected Goal [@BeLa19]. The aim is to work over this metric and try to improve it by adding some other variables and try different machine learning models that could give a better result. 
 
 The data used is the datased provided by StatsBomb itself [reference this shit]. Apart from the StatsBomb dataset, aiming to go one step further, ratings from the players in the game are used, since it is believed that are players that in the same circumstances achieve different results. This means that not only the scenario is considered in this project but also the actors. For this purpose player ratings are included to the dataset coming from the FIFA video game. 
 
@@ -43,17 +44,21 @@ A more sophisticated approach to analyse the shot situations in a football game 
 
 ## Dataset
 
-The project is mainly based on StatsBomb [reference this ????] dataset. This is a free dataset provided in order to new research projects in football analytics. The data from statsBomb includes very detailed and interesting features relevant for the project such as: location of the players on the pitch in any shot - including he position and actions of the Goalkeeper-, detailed information on defensive players applying pressure on the player in possession, or which foot the player on possession uses among others.
+The project is mainly based on a dataset from StatsBomb Academy [@StAc19]. This is a free dataset provided in order to new research projects in football analytics. The data from statsBomb includes very detailed and interesting features relevant for the project such as: location of the players on the pitch in any shot - including he position and actions of the Goalkeeper-, detailed information on defensive players applying pressure on the player in possession, or which foot the player on possession uses among others.
 
 The data is provided as JSON files exported from the StatsBomb Data API, in the following structure:
+
 * Competition and seasons stored in competitions.json.
+
 * Matches for each competition and season, stored in matches. Each folder within is named for a competition ID, each file is named for a season ID within that competition.
+
 * Events for each match, stored in events. The file is named for a match ID.
+
 * Lineups for each match, stored in lineups. The file is named for a match ID.
 
 In particular, the dataset only contains information about F.C. Barcelona games in the spanish national championship La Liga from 2005 up until 2019.
 
-As stated earlier, player skills are also considered in this project. To have an unbiased rate of players, ratings from the most played around the world football video game FIFA from EA Sports [reference this] are used. Also, it is considered which is the preferred foot of the player, information sourced from the same database. More in particular, this players information is gotten from *FIFAindex*. 
+As stated earlier, player skills are also considered in this project. To have an unbiased rate of players, ratings from the most played around the world football video game FIFA from EA Sports [@FIFA] are used. Also, it is considered which is the preferred foot of the player, information sourced from the same database. More in particular, this players information is gotten from *FIFAindex* [@Findex]. 
 
 ### Data Preprocessing
 
@@ -69,7 +74,8 @@ From this regards, and using the information in **shot.freeze_frame**, a number 
 
 Finally, every data point from the *shots* dataset, containing also the geometric features computed, is complemented with information of the players. For instance, the ratings of the striker and the goalkeeper in action are added or whether the player shooting is using his preferred foot or not.
 
-Finally, some features from the **shots** dataset which are not relevant to study are removed, creating a dataset for analysis called **anal** that will be the one used to train the models. The final features in the **anal** dataset are:
+Finally, some features from the **shots** dataset which are not relevant to study are removed, creating a dataset for analysis called **data** that will be the one used to train the models. The final features in the **data** dataset are:
+
 
 |**Variable** | **Definition**
 |------------ | -------------------------------------------|
@@ -110,9 +116,13 @@ Euclidean distance between the shooter and the center of the goal.
 #### Angle
 
 Angle of the goal from the shooter’s point of view in degrees. Picturing a triangle, where one side is the goal line and the other two are the imaginary lines connecting each goalpost to the shooter, we need the angle opposite of the goal line. We used the following formula:
-```{r include=TRUE, eval=FALSE}
+```{r include=FALSE, eval=FALSE}
 angle = acos((b^2 + c^2 - a^2) / (2*b*c)) * 180 / pi
 ```
+
+$$
+\alpha = \arccos\bigg(\frac{b^2+c^2-a^2}{2\cdot b\cdot c}\bigg)\cdot\frac{180}{\pi}
+$$
 
 
 where a is the goal line, and b and c are the imaginary lines between the shooter and the posts.
@@ -131,9 +141,15 @@ Number of players (teammates and opponents not including the opponent goalkeeper
 Then we conclude that the player being evaluated is inside the main triangle, therefore he is an obstacle.
 To calculate the area of a triangle based on the coordinates of its points, we used the following formula in R:
 
-```{r include=TRUE, eval=FALSE}
+```{r include=FALSE, eval=FALSE}
 area = abs((a[1] * (b[2]-c[2]) + b[1] * (c[2]-a[2]) + c[1] * (a[2]-b[2])) / 2)
 ```
+
+
+$$
+area = \left\lvert \frac{a_1\cdot(b_2-c_2)+b_1\cdot(c_2-a_2)+c_1\cdot(a_2-b_2)}{2} \right\rvert 
+$$
+
 
 
 where a, b and c are numeric vectors of length 2 representing the points of the triangle.
@@ -208,23 +224,15 @@ Euclidean distance between center of the goal and goalkeeper.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Machine Learning Models
 
 ### Logistic Regression
-DAVID
+
+From the moment that one tries to develop a classification algortihm, the first choice usually is the Logistic Regression. This study is no different.
+
+The Logistic Regression model it is based on the logistic function (sigmoid) which is an S-shaped curve that takes any real number and maps it between 0 and 1, but never reaching this numbers. From this point, by setting a threshold, also between 0 and 1, it is possible to divide data points in two classes. For instance, if the threshold is set at 0.7, those data points with a probability higher than 0.7 will be classified as one class and those with a probability lower than 0.7 will be classified as the other. The regression coefficients (betas) of the Logistic Regression are estimated by training the data. 
+
+In particular, the threshold set for this study a threshold of 0.5. In order to run the Logistic Regression algorithm, the package **glm** [reference this shit] from CRAN is used.
 
 
 ### Random Forest and AdaBoost
@@ -235,9 +243,21 @@ The Random Forest model in particular generates a number of trees based on a boo
 
 AdaBoost on the other side also generates a number of trees, but only trees that have a root node and two leaves with no children, this trees are called stumps and are not great at making accurate classification, they are weak learners. From this point, once one stump is made the data is run through it, and a decision is made. The errors made by this stump influence when creating the next one and so on. Therefore, some stumps have a greater impact to the model. To run the AdaBoost model, the package **mboost** from CRAN is used.
 
-In order to get the best model possible and not to make it too computational expensive, in both models it is important to choose the optimal number of trees. To do so, both algorithms are run a number of times with different amount of trees. Based on the error rates, the best model in is chosen, and afterwords trained with the data to get the best results possible. In figure [whatever whatever] it can be seen the error rates against the number of trees. The smallest error rate for training data in the Random Forest model appears when 40 trees are created, and for the AdaBoost model it appears when 30 trees are used. Therefore, the final models are set.
+In order to get the best model possible and not to make it too computational expensive, in both models it is important to choose the optimal number of trees. To do so, both algorithms are run a number of times with different amount of trees. Based on the error rates, the best model in is chosen, and afterwords trained with the data to get the best results possible. In figure \ref{fig:trees} it can be seen the error rates against the number of trees. The smallest error rate for training data in the Random Forest model appears when 40 trees are created, and for the AdaBoost model it appears when 30 trees are used. Therefore, the final models are set.
 
-$$HERE I WANT TO PUT A COOL GRAPH SHOWING THE ERROR RATES$$
+```{r echo = FALSE, eval = TRUE, message = FALSE, fig.cap="\\label{fig:trees} Random Forest and AdaBoost models error rates against the number of trees used.", out.width = "65%", fig.pos='!h', fig.align='center'}
+load("dev/merandom.Rda")
+load("dev/meada.Rda")
+n.trees <- seq(from = 10, to = 100, by = 10)
+# Plot Adaboost and Random forest error rates
+plot(n.trees, me.ada, ylim = c(0,0.30), pch = 16, col = "red",
+     xlab = "Number of trees", ylab = "Error rates",
+     main = "Adaboost Vs. Random forest", type = "b", lwd = 1)
+legend("topright",c("Adaboost","R. Forest"),lwd=c(1,1), col=c("red","blue"), pch=c(15,19), y.intersp=1.5)
+points(n.trees, me.random, pch = 17, col = "blue", type = "b", lwd = 1)
+
+```
+
 
 ### KNN model
 

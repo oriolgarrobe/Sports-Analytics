@@ -37,6 +37,7 @@ library(randomForest)
 
 
 # Fit the random forest model
+n.trees <- seq(from = 10, to = 100, by = 10)
 me.random <- rep(0,10)
 for (e in n.trees) {
   random <- randomForest(formula = goal~., data = train, ntree=e)
@@ -44,6 +45,8 @@ for (e in n.trees) {
   cm.random <- table(random.pred, test$goal)
   me.random[which(e==n.trees)] <- (cm.random[2,1]+cm.random[1,2])/(nrow(test))
 }
+
+save(me.random, file="dev/merandom.Rda")
 
 # Fit the Adaboost model
 n.trees <- seq(from = 10, to = 100, by = 10)
@@ -54,8 +57,8 @@ for (i in n.trees) {
   cm.ada <- table(ada.pred, test$goal)
   me.ada[which(i==n.trees)] <- (cm.ada[2,1]+cm.ada[1,2])/(nrow(test))
 }
-
-
+  
+save(me.ada, file="dev/meada.Rda")
 
 # Plot Adaboost and Random forest error rates
 plot(n.trees, me.ada, ylim = c(0,0.30), pch = 16, col = "red",
