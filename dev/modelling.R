@@ -30,7 +30,14 @@ test = anal[-train_index,]
 
 ########################################### LOGISTIC REGRESSION ###########################################
 model <- glm(goal ~ .,family=binomial(link='logit'), data = subset(train, select = c(2:23)))
-summary(model)
+coeff = as.data.frame(summary(model)$coeff)
+colnames(coeff) = c('Coefficient', 'a', 'b', 'c')
+coeff$Feature = rownames(coeff)
+coeff <- coeff %>% mutate(Significant = ifelse(c<0.05, TRUE, FALSE)) %>% filter(Significant) %>% select(Feature, Coefficient)
+coeff = coeff[2:9,]
+
+### save coeff dataframe for future use
+save(coeff,file="dev/coeff.Rda")
 
 fitted <- predict(model,newdata = subset(test, select = c(2:23)),type='response')
 
