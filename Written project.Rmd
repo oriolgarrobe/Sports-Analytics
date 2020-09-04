@@ -211,7 +211,21 @@ From the moment that one tries to develop a classification algortihm, the first 
 
 The Logistic Regression model it is based on the logistic function (sigmoid) which is an S-shaped curve that takes any real number and maps it between 0 and 1, but never reaching this numbers. From this point, by setting a threshold, also between 0 and 1, it is possible to divide data points in two classes. For instance, if the threshold is set at 0.7, those data points with a probability higher than 0.7 will be classified as one class and those with a probability lower than 0.7 will be classified as the other. The regression coefficients (betas) of the Logistic Regression are estimated by training the data. 
 
-In particular, the threshold set for this study a threshold of 0.5. In order to run the Logistic Regression algorithm, the package **glm** [@glm] from CRAN is used.
+In particular, the threshold set for this study a threshold of 0.5. In order to run the Logistic Regression algorithm, the package **glm** [@glm] from CRAN is used. We chose this value of threshold, because it made the most sense to classify shots as goals that have a Scoring Probability of more than 50%. This also gave us the best overall accuracy, and a good balance between precision, recall and F1 score. These metrics could have been improved by changing the threshold, but only at the expense of the others.
+
+We used 70% of the dataset for training and 30% for testing. We also made sure that the ratio of goals to not goals is the same in both subsets using stratified sampling.
+
+The trained model estimated the following coefficients for the features that were considered statistically significant (see Table \ref{tab:coeff}). Shooting with the strong foot has the largest positive effect on the probability of scoring, but a goalkeeper standing far off the goal line and a larger angle of the shot also help the shooter. It is also better for scoring if the closest opponent is far from the shooter. Good goalkeeper positioning, many players obscuring the goal and the possibility of getting the shot blocked all have a negative effect, understandably. It is interesting that the player's finishing ability only has a small positive influence on the probability of scoring.
+
+```{r echo = FALSE, eval = TRUE}
+load('dev/coeff.Rda')
+rownames(coeff) = NULL
+coeff$Coefficient = round(coeff$Coefficient,3)
+coeff = coeff %>% arrange(desc(Coefficient))
+kable(coeff, caption = "Estimated coefficients of significant features in logistic regression", label = 'coeff')
+
+```
+
 
 
 ### Random Forest and AdaBoost
@@ -369,4 +383,4 @@ The algorithm, built on a simple logistic regression and only 25 relevant featur
 
 # References
 
-
+![Statsbomb logo](logo.png)
