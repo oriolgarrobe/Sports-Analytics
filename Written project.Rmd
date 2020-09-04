@@ -33,14 +33,18 @@ From this point of view, a large number of researchers have worked on sports ana
 
 This project aims to study the probability of scoring of a player when shooting, so professionals can use this approach to look for better positions of shooting - those situations when a player has a big chance of scoring - and avoid those that apparently look good but they have a lower chance of goal. 
 
-As mentioned, there is a bast number of papers regarding football, but there is still room fore more. There are so many aspects of the game that can be analysed, and the game can be heavily improved using AI. From this regards, this project is based in a metric from StatsBomb called expected Goal [@BeLa19]. The aim is to work over this metric and try to improve it by adding some other variables and try different machine learning models that could give a better result. 
+As mentioned, there is a bast number of papers regarding football, but there is still room fore more. There are so many aspects of the game that can be analysed, and the game can be heavily improved using AI. From this regards, this project is based on a metric from StatsBomb called expected Goal [@BeLa19]. The aim is to work over this metric and try to improve it by adding some other variables and trying different machine learning models that could give a better result. 
 
-The data used is the datased provided by StatsBomb itself [reference this shit]. Apart from the StatsBomb dataset, aiming to go one step further, ratings from the players in the game are used, since it is believed that are players that in the same circumstances achieve different results. This means that not only the scenario is considered in this project but also the actors. For this purpose player ratings are included to the dataset coming from the FIFA video game. 
+The data used is the datased provided by StatsBomb itself [reference this shit!!!!!!]. Apart from the StatsBomb dataset, aiming to go one step further, ratings from the players in the game are used, since it is believed that are players that in the same circumstances achieve different results. This means that not only the scenario is considered in this project but also the actors. For this purpose player ratings are included to the dataset coming from the FIFA video game. 
 
-A more sophisticated approach to analyse the shot situations in a football game would clearly help practitioners to design more technical interventions and strength and conditioning programmes for players. Accordingly, it is the purpose of this study to develop and validate a machine learning algorithm to identify the best shooting situations for players. 
 
 # Related work
 
+Many researchers have worked on the topic of predicting goals and match outcomes in football from many different approaches. The most mainstream metric for this kind of analysis is the Expected Goals (xG), the origin of which is debated among experts, but the first paper published about it that has a very strong connection to what we call xG today was written by (https://www.researchgate.net/publication/240641737_Estimating_the_probability_of_a_shot_resulting_in_a_goal_The_effects_of_distance_angle_and_space REFERENCE!!!!!) in 2004. They used a logistic regression model to determine the success of a shot and identified important factors, most of which we also work with.
+
+
+
+Our research makes use of the database's spatial information containing coordinates of all the players to calculate features that are similar to those used by other analysts. We also included player ratings in the analysis, which is not part of a traditional xG model, therefore we call our metric Scoring Probability. With this addition, we aim to create a metric that predicts shot outcomes more accurately.
 
 
 
