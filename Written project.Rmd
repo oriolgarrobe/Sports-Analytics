@@ -1,7 +1,7 @@
 ---
-title: "Expected Goal Analysis"
+title: "Predicting Goals in Football: Estimating the Probability of Scoring from Shots by FC Barcelona Players"
 author: "Oriol Garrobé and Dávid Hrabovszki"
-date: "28/08/2020"
+date: "06/09/2020"
 output:
   pdf_document: default
   html_document: default
@@ -17,7 +17,7 @@ library(knitr)
 
 # Abstract
 
-The world is changing with the advance of technology and the vast amount of data available, and so does sport. Team sports such as football, are starting to introduce mathematical methods to analize performances, recognize trends and patterns and predict results. From this point, the purpose of this study is to develop a Machine Learning model that is capable to predict when a shot is going to end up being a goal. 
+The world is changing with the advance of technology and the vast amount of data available, and so does sport. Team sports such as football, are starting to introduce mathematical methods to analyse performances, recognize trends and patterns and predict results. The purpose of this study is to develop a new metric called Scoring Probability using Machine Learning models that is capable of predicting when a shot is going to end up being a goal. Scoring Probability is inspired by the Expected Goals metric.
 
 To do so, many different mathematical approaches are trained on a dataset that tries to represent the exact moment of the shot as detailed as possible. Also, the dataset includes information about the players, their skills and the moment of the game. By doing so, a Logistic Regression algorithm is the one that yields the best performance when predicting goals, with an F1-score of 35.24%, improving the previous works on the field. 
 
@@ -25,7 +25,7 @@ This study intends to provide new information and hidden insights to professiona
 
 # Introduction
 
-Trying to play the best football possible in order to win all the titles is a quest that all the best teams in the world follow. Practicing methods have changed, and therefore football istelf. Because of the evolution of technology and the rapidly increasing amount of data - as done in other sports such as baseball - football is introducing datascience techniques to its toobox in order to improve the game. 
+Trying to play the best football possible in order to win all the titles is a quest that all the best teams in the world follow. Practicing methods have changed, and therefore football istelf. Because of the evolution of technology and the rapidly increasing amount of data - as done in other sports such as baseball - football is introducing data science techniques to its toobox in order to improve the game. 
 
 Teams use data science and machine learning approaches to analyse which aspects of the games can be improved to become the best team. Artificial intelligence (AI) in sports is very relevant nowadays, and it changed the way coaches approach their practice sessions.
 
@@ -35,14 +35,18 @@ This project aims to study the probability of scoring of a player when shooting,
 
 As mentioned, there is a bast number of papers regarding football, but there is still room fore more. There are so many aspects of the game that can be analysed, and the game can be heavily improved using AI. From this regards, this project is based on a metric from StatsBomb called expected Goal [@BeLa19]. The aim is to work over this metric and try to improve it by adding some other variables and trying different machine learning models that could give a better result. 
 
-The data used is the datased provided by StatsBomb itself [reference this shit!!!!!!]. Apart from the StatsBomb dataset, aiming to go one step further, ratings from the players in the game are used, since it is believed that are players that in the same circumstances achieve different results. This means that not only the scenario is considered in this project but also the actors. For this purpose player ratings are included to the dataset coming from the FIFA video game. 
+The data used is the datased provided by StatsBomb itself. [@dataset]
+
+Apart from the StatsBomb dataset, aiming to go one step further, ratings from the players in the game are used, since it is believed that are players that in the same circumstances achieve different results. This means that not only the scenario is considered in this project but also the actors. For this purpose player ratings are included to the dataset coming from the FIFA video game. 
 
 
 # Related work
 
-Many researchers have worked on the topic of predicting goals and match outcomes in football from many different approaches. The most mainstream metric for this kind of analysis is the Expected Goals (xG), the origin of which is debated among experts, but the first paper published about it that has a very strong connection to what we call xG today was written by (https://www.researchgate.net/publication/240641737_Estimating_the_probability_of_a_shot_resulting_in_a_goal_The_effects_of_distance_angle_and_space REFERENCE!!!!!) in 2004. They used a logistic regression model to determine the success of a shot and identified important factors, most of which we also work with.
+Many researchers have worked on the topic of predicting goals and match outcomes in football from many different approaches. The most mainstream metric for this kind of analysis is the Expected Goals (xG), the origin of which is debated among experts, but the first paper published about it that has a very strong connection to what we call xG today was written by Pollard et al. in 2004. They used a logistic regression model to determine the success of a shot and identified important factors, most of which we also work with. [@xg]
 
+Mackay used ridged logistic regression to predict goals, but his analysis was based on possession sequences, not just shots. He used event based data with player locations, similar to this paper. The analysis concluded that although involving events before the shot improves prediction, the last event of the sequence is by far the most important factor. [@logreg]
 
+Herbinet conducted an analysis that predicts match outcomes, but an important part of the paper is a shot xG generation, similar to ours. He developed a metric that uses some of the features included in the original xG and that we also use in this paper. He added coefficients that take into account if the goal is scored towards the end of the match, or if the team has more players on the pitch due to an opponent's red card. We managed to achieve higher accuracy and F1-score with our model described later in this paper. [@match_pred]
 
 Our research makes use of the database's spatial information containing coordinates of all the players to calculate features that are similar to those used by other analysts. We also included player ratings in the analysis, which is not part of a traditional xG model, therefore we call our metric Scoring Probability. With this addition, we aim to create a metric that predicts shot outcomes more accurately.
 
@@ -52,9 +56,9 @@ Our research makes use of the database's spatial information containing coordina
 
 ## Dataset
 
-The project is mainly based on a dataset from StatsBomb Academy [@StAc19]. This is a free dataset provided in order to new research projects in football analytics. The data from statsBomb includes very detailed and interesting features relevant for the project such as: location of the players on the pitch in any shot - including he position and actions of the Goalkeeper-, detailed information on defensive players applying pressure on the player in possession, or which foot the player on possession uses among others.
+The project is mainly based on a dataset from StatsBomb [@dataset]. This is a free dataset provided in order to new research projects in football analytics. The data from statsBomb includes very detailed and interesting features relevant for the project such as: location of the players on the pitch in any shot - including he position and actions of the Goalkeeper-, detailed information on defensive players applying pressure on the player in possession, or which foot the player on possession uses among others.
 
-The data is provided as JSON files exported from the StatsBomb Data API, in the following structure:
+The data is provided as JSON files downloaded from the StatsBomb Data GitHub page, in the following structure:
 
 * Competition and seasons stored in competitions.json.
 
@@ -64,7 +68,7 @@ The data is provided as JSON files exported from the StatsBomb Data API, in the 
 
 * Lineups for each match, stored in lineups. The file is named for a match ID.
 
-In particular, the dataset only contains information about F.C. Barcelona games in the spanish national championship La Liga from 2005 up until 2019.
+In particular, the dataset only contains information about F.C. Barcelona games in the spanish national championship La Liga from 2005 up until 2019. There are 6428 shots in the dataset, 1044 of which became goals. For our analysis, we split the data to training and test sets (70% and 30% respectively).
 
 As stated earlier, player skills are also considered in this project. To have an unbiased rate of players, ratings from the most played around the world football video game FIFA from EA Sports [@FIFA] are used. Also, it is considered which is the preferred foot of the player, information sourced from the same database. More in particular, this players information is gotten from *FIFAindex* [@Findex]. 
 
@@ -76,16 +80,14 @@ The StatsBomb dataset containing all the relevant information for the project is
 
 The first step working with the dataset is to erase all the incomplete datapoints or those with wrong information that would afterwards make the models fail. From this point, and because this project is only focused on shots, the dataset is filtered by the variable **type** which contains the type of action of the event. This variable is filtered so only the events regarding shots remain. A **shots** dataset, way lighter than the one used before is created. 
 
-It is important to emphasize on the fact that this dataset contains an extremely useful information which is enclosed in the variable called **shot.freeze_frame**. This **shot.freeze_frame** states where all the players are positioned on the pitch at the moment of the event. It is considered that relevant since it allows to make a perfect picture of the scenario at the moment of the shot. 
-
-From this regards, and using the information in **shot.freeze_frame**, a number of new features can be computed and added to the dataset. More in particular, geometric features regarding the position of the striker, the defenders and the goalkeeper are computed. Such features will allow to know, for instance, which is the distance to target of the ball, whether the goalkeeper is properly positioned or if there are defenders close enough to disturb the striker. 
+It is important to emphasize on the fact that this dataset contains an extremely useful information which is enclosed in the variable called **shot.freeze_frame**. This **shot.freeze_frame** states where all the players are positioned on the pitch at the moment of the event. It is considered that relevant since it allows to make a perfect picture of the scenario at the moment of the shot. From this regards, and using the information in **shot.freeze_frame**, a number of new features can be computed and added to the dataset. More in particular, geometric features regarding the position of the striker, the defenders and the goalkeeper are computed. Such features will allow to know, for instance, which is the distance to target of the ball, whether the goalkeeper is properly positioned or if there are defenders close enough to disturb the striker. These calculated features will be introduced in more detail in the Feature engineering part of this paper.
 
 Finally, every data point from the *shots* dataset, containing also the geometric features computed, is complemented with information of the players. For instance, the ratings of the striker and the goalkeeper in action are added or whether the player shooting is using his preferred foot or not.
 
 Finally, some features from the **shots** dataset which are not relevant to study are removed, creating a dataset for analysis called **data** that will be the one used to train the models. The final features in the **data** dataset are:
 
 
-```{r echo = FALSE, eval = TRUE}
+```{r echo = FALSE, eval = TRUE, message=FALSE, warning=FALSE}
 library(readxl)
 library(kableExtra)
 variables_defs <- read_xlsx('data/variables.xlsx', col_names = T)
@@ -128,7 +130,7 @@ Number of players (teammates and opponents not including the opponent goalkeeper
 3. The two goalposts and the player being evaluated
 
 Then we conclude that the player being evaluated is inside the main triangle, therefore he is an obstacle.
-To calculate the area of a triangle based on the coordinates of its points, we used the following formula in R:
+To calculate the area of a triangle based on the coordinates of its points, we used the following formula:
 
 ```{r include=FALSE, eval=FALSE}
 area = abs((a[1] * (b[2]-c[2]) + b[1] * (c[2]-a[2]) + c[1] * (a[2]-b[2])) / 2)
@@ -141,7 +143,7 @@ $$
 
 
 
-where a, b and c are numeric vectors of length 2 representing the points of the triangle [@geek].
+where a, b and c are numeric vectors of length 2 (x and y coordinates) representing the points of the triangle [@geek].
 
 
 #### Pressure proximity
@@ -158,22 +160,24 @@ The opponent goalkeeper’s physical ability to save the shot by being inside th
 
 #### Goalkeeper positioning
 
-Positioning of the opponent goalkeeper. The value is between 0 and 1, where a value of 1 means that the goalkeeper halves the angle of the shot, while a value of 0 means that the angle remains the same. This does not take into account if the goalkeeper is standing on the line or right in front of the shooter, only that he is positioned on the line that halves the angle of the shot. A larger kernel width means that the kernel distinguishes less between bad and good goalkeeper positioning, while a small value means that only split angles close to 0.5 can get a good mark for goalkeeper positioning, as it can be observed on Figure \ref{fig:gauss_kernel}. We used a kernel width of 0.2 for this feature.
+Positioning of the opponent goalkeeper. The value is between 0 and 1, where a value of 1 means that the goalkeeper halves the angle of the shot, while a value of 0 means that the angle remains the same. This does not take into account if the goalkeeper is standing on the line or right in front of the shooter, only that he is positioned on the line that halves the angle of the shot. 
 
-```{r, echo = FALSE, eval = TRUE, fig.cap="\\label{fig:gauss_kernel} Gaussian kernels that give more weight to values around 0.5 (good split angle by the goalkeeper). Kernel width controls how strict the kernel is.", out.width = "100%", fig.height = 5, fig.width = 12, fig.pos='!h', fig.align='center'}
+We used a Gaussian kernel that can take a value between 0 and 1 depending on the input. The input, in this case, is the ratio of the angle split by the goalkeeper and the full shot angle. A larger kernel width means that the kernel distinguishes less between bad and good goalkeeper positioning, while a small value means that only angle ratios close to 0.5 can get a good mark for goalkeeper positioning, as it can be observed on Figure \ref{fig:gauss_kernel}. We used a kernel width of 0.2 for this feature.
+
+```{r, echo = FALSE, eval = TRUE, fig.cap="\\label{fig:gauss_kernel} Gaussian kernels that give a higher rating to values around 0.5 (perfect split angle by the goalkeeper). Kernel width controls how strict the kernel is.", out.width = "100%", fig.height = 5, fig.width = 12, fig.pos='!h', fig.align='center'}
 source("dev/helper_functions/gauss_kernel.R")
 par(mfrow=c(1,2))
 perc_diff = seq(0,1, by = 0.001)
 h2 = 0.2
 kernel2 =  exp(-((perc_diff - 0.5)/h2)^2)
-plot(perc_diff, kernel2, type = 'l', main = "Kernel width = 0.2", xlab = "", ylim = c(0,1), ylab = "kernel value")
+plot(perc_diff, kernel2, type = 'l', main = "Kernel width = 0.2", xlab = "ratio of shot angle split by the gk", ylim = c(0,1), ylab = "kernel value")
 abline(v = 0.5, col = 'blue')
 
 
 perc_diff = seq(0,1, by = 0.001)
 h2 = 1
 kernel2 =  exp(-((perc_diff - 0.5)/h2)^2)
-plot(perc_diff, kernel2, type = 'l', main = "Kernel width = 1", xlab = "", ylim = c(0,1), ylab = "kernel value")
+plot(perc_diff, kernel2, type = 'l', main = "Kernel width = 1", xlab = "ratio of shot angle split by the gk", ylim = c(0,1), ylab = "kernel value")
 abline(v = 0.5, col = 'blue')
 ```
 
@@ -184,7 +188,7 @@ This feature was not included in the analysis, because it proved to be too stric
 
 Very similar to Goalkeeper positioning, but this feature is adjusted with the shot angle, meaning that it takes into account the full shot angle when evaluating goalkeeper positioning. This is necessary, because the previous variable was too strict when it came to tight shots, and it gave a bad value for the goalkeeper, even though he was still positioned pretty well. For example, if the angle of the shot was 5 degrees, the goalkeeper should not be given a bad mark for his positioning if he splits the angle to 1 and 4 degrees. With such tight angles, it does not really matter where he stands, as long as he is obstructing the goal, of course.
 
-We solved this problem by introducing another Gaussian kernel that gives a high output value for small input values (shot angles) and outputs a value close to 0.2 for larger input values (shot angles). The kernel width in this case was chosen to be 20. Then, this kernel value was used as the kernel width for the original Gaussian kernel described above in the previous feature. This way we achieved that the Goalkeeper positioning adjusted feature is more lenient towards tight shots than Goalkeeper positioning, thus more accurate in evaluating real life goalkeeper positioning.
+We solved this problem by introducing another Gaussian kernel that gives a high output value for small input values (full shot angles) and outputs a value close to 0.2 for larger input values (full shot angles). The kernel width in this case was chosen to be 20 (see Figure \ref{fig:gauss_kernel_adjust}). Then, this adjusting kernel value was used as the kernel width for the final Gaussian kernel described above in the previous feature. This way we achieved that the Goalkeeper positioning adjusted feature is more lenient towards tight shots than Goalkeeper positioning, thus more accurate in evaluating real life goalkeeper positioning. For example, for a shot that has an angle of 10 degrees, the adjusting kernel value will be around 1, which will result in a final kernel that takes the shape of the right figure in Figure \ref{fig:gauss_kernel}. A shot angle of 50 degrees however, will get an adjusting kernel value of 0.2, therefore the final kernel will have the shape of the left figure in Figure \ref{fig:gauss_kernel}. 
 
 
 ```{r, echo = FALSE, eval = TRUE, fig.cap="\\label{fig:gauss_kernel_adjust} Adjusting Gaussian kernel that gives more weight to lower values (shot angles)", out.width = "65%", fig.pos='!h', fig.align='center'}
@@ -192,7 +196,7 @@ source("dev/helper_functions/gauss_kernel.R")
 x = seq(0,180, by = 0.01)
 h3 = 20
 kernel3 =  exp(-((x)/h3)^2)+0.2
-plot(x, kernel3, type = 'l', main = "", xlab = "", ylim = c(0,2), ylab = "kernel value")
+plot(x, kernel3, type = 'l', main = "Kernel width = 20", ylim = c(0,2), ylab = "kernel value", xlab = "full shot angle")
 abline(v = 37, col = 'blue')
 ```
 
@@ -263,11 +267,11 @@ The KNN (K-Nearest Neighbours) model is a classification model that identifies t
 
 # Results
 
-* **Accuracy**. Stands for the ratio of correctly predicted observation over the total observations. If it is high it means that there are a lot of good predictions but it must be taken into account that for assymetric datasets or uneven classes - those where one class is larger than the other - it can be biased. In particular, in the dataset used there are way less shots that ended up being a goal than those that not. So, with a naive predictor all the datapoints could have been set to not goal/miss and the accuracy would have been still high. That is other metrics must be used in order to take this into account. 
+* **Accuracy**. Stands for the ratio of correctly predicted observation over the total observations. If it is high it means that there are a lot of good predictions but it must be taken into account that for assymetric datasets or uneven classes - those where one class is larger than the other - it can be biased. In particular, in the dataset used there are much fewer shots that ended up being a goal than those that did not. So, with a naive predictor all the datapoints could have been set to not goal/miss and the accuracy would have been still high. That is, other metrics must be used in order to take this into account. 
 
-* **Recall**. Otherwise called sensitivity, stands for the correctly predicted positive observations to all observations in an actual class. This metric checks how many properly predicted points are predicted within a class, in this case **goal**. This means that it tries to show how many predicted goals are actually goals. Since in football there are not many goals, it is a very innacurate metric, as many times a situation that should clearly end up in goal in the end is not. This is why this one is not a very indicative metric for the purposes or the project. However, it is good to compute it in order to get some conclusions.
+* **Recall**. Otherwise called sensitivity, stands for the correctly predicted positive observations to all observations in an actual class. This metric checks how many properly predicted points are predicted within a class, in this case **goal**. This means that it tries to show how many predicted goals are actually goals. Since in football there are not many goals, it is a very innacurate metric, as many times a situation that should clearly end up in goal in the end does not. This is why this one is not a very indicative metric for the purposes or the project. However, it is good to compute it in order to get some conclusions.
 
-* **F1-score**. This metric is a weighted average of precision and recall, being precision the number of properly predicted observations in a class over all the observations fom that class. From this point, it takes both false positives and false negatives into account too, it is very useful when the goal is to predict uneven classes. In this case, as there are way more observations that are not goal than those that are goal, this metric is the one that mirrors best the quality of the algorithm. 
+* **F1-score**. This metric is a weighted average of precision and recall, being precision the number of properly predicted observations in a class over all the observations fom that class. From this point, it takes both false positives and false negatives into account too, it is very useful when the goal is to predict uneven classes. In this case, as there are much more observations that are not goal than those that are goal, this metric is the one that mirrors best the quality of the algorithm. 
 
 ```{r echo = FALSE, eval = TRUE}
 library(readxl)
@@ -279,20 +283,19 @@ x <- kable(results, caption = "Comparison of the models train to xG.",  )
 
 # Discusion
 
-In this study, a Machine Learning algorithm to quantify the probability of a football player scoring is develooped, using the positioning of the players in the pitch and their skills. 4 classification approaches using 25 variables which derived from the particular scenario at the moment of the shot were examined. It has been proven that it is possible to classify whether a shot is going to be a goal or not with good accuracy, being the best performing method the logistic regression with an F-1 score of 35.24%, a recall of 23.72% and an accuracy of 85.89%. It also has improved the xG metric from statsBomb by adding player skills to the dataset and testing other Machine Learning approaches. This will provide professional of the sport such as players, coaches or managers some insights from the game that can be very useful to improve their performance. 
+In this study, a Machine Learning algorithm to quantify the probability of a football player scoring is develooped, using the positioning of the players in the pitch and their skills. Four classification approaches using 25 variables which derived from the particular scenario at the moment of the shot were examined. It has been proven that it is possible to classify whether a shot is going to be a goal or not with good accuracy, being the best performing method the logistic regression with an F-1 score of 35.24%, a recall of 23.72% and an accuracy of 85.89%. It also has improved the xG metric from StatsBomb by adding player skills to the dataset and testing other Machine Learning approaches. This will provide professional of the sport such as players, coaches or managers some insights from the game that can be very useful to improve their performance. 
 
-Models based on decision trees such as Random Forest or AdaBoost provided mixed results that did not improve the previous works on the field. In particular, the optimal Random Forest algorithm with 40 trees yielded an F1-score of 32.24%, a recall of 22.05% and an accuracy of 60%. Looking at this results, it can be seen that eventhough the F1-Score is close to the one from xG, the overall accuracy is poorer, which means that many shots that were classified as miss where actually a goal. On the other hand, the optimal AdaBoost algorithm with 30 trees yielded an F1-score of 19.71%, a recall of 11.18% and an accuracy of 83.33%. All the results are worst than the xG metric, bringing no improvement to the field. This model failed as almost no goals were predicted, only 11.18% (recall) of the goals were predicted properly. From this point of view, these two algorithms do not bring improvements to the field or relevant information that can be used to improve the game.
+Models based on decision trees such as Random Forest or AdaBoost provided mixed results that did not improve the previous works on the field. In particular, the optimal Random Forest algorithm with 40 trees yielded an F1-score of 32.24%, a recall of 22.05% and an accuracy of 60%. Looking at this results, it can be seen that even though the F1-Score is close to the one from xG, the overall accuracy is poorer, which means that many shots that were classified as miss were actually a goal. On the other hand, the optimal AdaBoost algorithm with 30 trees yielded an F1-score of 19.71%, a recall of 11.18% and an accuracy of 83.33%. All the results are worse than the xG metric by StatsBomb, bringing no improvement to the field. This model failed as almost no goals were predicted, only 11.18% (recall) of the goals were predicted properly. From this point of view, these two algorithms do not bring improvements to the field or relevant information that can be used to improve the game.
 
 Another model used to classfy goals is the K-NN algorithm. This algorithm yielded better results than models based on decision trees with an F1-score of 39.54%, a recall of 27.79% and an accuracy of 68.50%. It has the best F1-Score of all models used and also improves the xG metric. As stated before, the F1-score is the metric that mirrors best the quality of this algorithm, and this method could be the one chosen for the project. It also has the best recall among all the models. However, it has a relevant lower overall accuracy compared to xG or Logistic Regression. It yields a better F1-score and a better recall due the fact that predicts many more situations as goals than Random Forest, Adaboost or xG. However, many situations that were not goal were classified as goal, this is why this model has a lot of room to improve. 
 
-Finally, ### HERE WRITE ABOUT WHY WE CHOOSE LOGISTIC REGRESSION
-Notes: could have lowered threshold below 50% to get more predicted goals, but it doesn't make sense, and lowers accuracy (check if it lowers F1 score)
+After building several machine learning models, we conclude that logistic regression is the best suited for this problem, because it produced a relatively high F1 score, while keeping the overall accuracy high as well. Therefore, going forward we apply logistic regression in this paper.
 
 ## Player performances
 
 In the previous sections we created models to predict goals, chose the best one, and now we are going to interpret the results on the player's level. We aim to find out how well each player performs from the aspect of converting shots to goals. We suspect that there are players that score more goals than they are expected to, and there are some that score fewer. It is important to note, that the database we used for analysis had 1044 goals, while we only predicted 320 goals with our best model for the whole dataset. Therefore, to make the amount of actual and predicted goals by each player comparable, we scaled up the amount of predicted goals for the sake of this performance analysis, so they also sum up to 1044.
 
-The results can be observed in the table below, which is ordered by the amount of goals scored. It is no surprise that Messi scored 33.85 more goals (11% more) than he should have, based on his chances. This is in line with our belief that he is a very efficient striker. Even more efficient than Messi are Ivan Rakitic and Daniel Alves. The latter player is primarily a defender, but still managed to score 11 goals, even though none were predicted for him.
+The results can be observed in Table \ref{tab:players}, which is ordered by the amount of goals scored. It is no surprise that Messi scored 33.85 more goals (11% more) than he should have, based on his chances. This is in line with our belief that he is a very efficient striker. Even more efficient than Messi are Ivan Rakitic and Daniel Alves. The latter player is primarily a defender, but still managed to score 11 goals, even though none were predicted for him.
 
 The most underperforming players, when it comes to converting chances, were Samuel Eto'o and Zlatan Ibrahimovic. Luis Suárez also scored much fewer goals (27.76), than expected.
 
@@ -306,7 +309,7 @@ table$actual_to_prediction_amount = round(table$actual_to_prediction_amount,2)
 table$diff_to_prediction_percent = round(table$diff_to_prediction_percent,2)
 
 colnames(table) <- c('Name', "Goals predicted (scaled up)", "Goals scored", "Diff. (amount)", "Diff. (ratio)")
-kable(table, caption = "Player performances (who scored more than 10 goals)")
+kable(table, caption = "Player performances (who scored more than 10 goals)", label = "players")
 ```
 
 The next section will present some shots visually that might help explain these differences.
@@ -315,7 +318,7 @@ The next section will present some shots visually that might help explain these 
 
 Now we plot some of the shots to illustrate how such differences can occur between reality and prediction, and also to show some chances that had a high Scoring Probability, but were missed, or had a low probability, but still went in. We used the package **soccermatics** [@soccermatics] to plot the empty pitch, and then we wrote our own function that places the players and the shot itself on the pitch.
 
-Figures \ref{fig:alves1} and \ref{fig:alves2} show two goals from Daniel Alves that he scored against the odds. These efforts contribute to him performing much better, than expected (see the table in the previous section).
+Figures \ref{fig:alves1} and \ref{fig:alves2} show two goals from Daniel Alves that he scored against the odds. These efforts contribute to him performing much better, than expected (see Table \ref{tab:players} in the previous section).
 
 ```{r echo = FALSE, eval = TRUE, message = FALSE, fig.cap="\\label{fig:alves1} Daniel Alves goal (Scoring Probability =  0.029)", out.width = "65%", fig.pos='!h', fig.align='center'}
 library(soccermatics)
@@ -357,7 +360,7 @@ plot_shot(index = etoo, df = shots, full_pitch = F)
 
 \newpage
 
-Finally a typical Lionel Messi goal against Levante, where he had less than 50% probability of scoring, but still managed to put the ball into the net.
+Finally a Lionel Messi goal against Levante, where he had less than 50% probability of scoring, but still managed to put the ball into the net.
 
 ```{r echo = FALSE, eval = TRUE, message = FALSE, fig.cap="\\label{fig:messi} Lionel Messi goal (Scoring Probability =  0.120)", out.width = "65%", fig.pos='!h', fig.align='center'}
 
@@ -372,18 +375,24 @@ plot_shot(index = messi, df = shots, full_pitch = F)
 
 # Future improvements
 
-The limitations of this study must be acknowledged. The data sample consist only of **F.C. Barcelona** games in the national regular season **La Liga**. From this regards, Barcelona players - which are known to be very effective - playing against  worse teams can lead to some biased results. It is also worth to be mentioned than as the dataset starts in 2005, many of the shots are done by **Leo Messi**, for many the best player in history and definetly one of the best strikers of all times. This can also lead to not very relevant results for the football comunity. This is why this project used player ratings, as an attempt to introduce this information to the models, that can be used therefore at all levels. It would be good therefore, to add more shot situations from many different competitions from different countries and different teams. This would give a more realistic dataset and also it would provide more data points that would definetly help train the algorithm, probably achieving better results. 
+The limitations of this study must be acknowledged. The data sample consist only of **F.C. Barcelona** games in the national regular season **La Liga**. From this regards, Barcelona players - which are known to be very effective - playing against  worse teams can lead to some biased results. It is also worth to be mentioned than as the dataset starts in 2005, many of the shots are done by **Leo Messi**, for many the best player in history and definitely one of the best strikers of all times. This can also lead to not very relevant results for the football community. This is why this project used player ratings, as an attempt to introduce this information to the models, that can be used therefore at all levels. It would be good therefore, to add more shot situations from many different competitions from different countries and different teams. This would give a more realistic dataset and also it would provide more data points that would definitely help train the algorithm, probably achieving better results. 
 
-Another possible improvement would be to create more variables. With the dataset provided the authors created a data set that comprised all those variables that could have an effect on the result of the shot. New variables were computed giving a proper dataset to work on. However, more variables could have been added or created. With more variables, a better picture of the situation of the shot is drawn. With this new dataset other Machine Learning approaches, more modern and complex could have been applied. For instance, would be good to train a Neural Net in order to predict goals. In order to do so, high computational resources are needed, that is why Neural Nets are not used in this studio, but could probably improve the results. 
+Another possible improvement would be to create more variables. With the dataset provided the authors created a data set that comprised all those variables that could have an effect on the result of the shot. New variables were computed giving a proper dataset to work on. However, more variables could have been added or created. With more variables, a better picture of the situation of the shot is drawn. With this new dataset other Machine Learning approaches, more modern and complex could have been applied. For instance, it might be good to train a Neural Net in order to predict goals. In order to do so, high computational resources are needed, that is why Neural Nets are not used in this project, but could probably improve the results.
 
-Another improvement to the study would be to apply the same methods to other types of events other than **shots**, such as success in **passes** or **tackles**. This would provide information not only to the strikers but to every player on the field, improving - as this is the final aim of Football Analysis - the game. 
+The aim of this analysis was to predict goals from shots, but we deviated from the traditional xG metric by including player ratings in the models. The ratings however are just subjective assessments of players by experts, who created the FIFA video game. This introduces bias into the model, so a better way of including player abilites might be to build separate models for each player without their FIFA rating. This is of course much more computationally expensive and we did not have enough data for every player to carry this out.
+
+An extension to this study would be to apply the same methods to other types of events other than **shots**, such as success in **passes** or **tackles**. This would provide information not only to the strikers but to every player on the field, improving - as this is the final aim of Football Analysis - the game. 
+
+A probable future use for this analysis could be a system that coaches could use to show a player positions where he should have passed the ball to a teammate instead of shooting, because he would have had a higher Scoring Probability. This would mean that the system would look at all the teammates' positions and calculate the Scoring Probability for them also.
 
 
 # Conclusion
 
-Football is a very demanding sport, and the high impact that it has in society makes teams strive for perfection. From this point, game demands are extensively analysed and new concepts coming from data science are introduced to coaches plans. This projects created a classifier that provides more information regarding the shooting positions of players. It intends to help players choose wiser when shooting, or in the other hand to advise them not to shoot when the chances are very low and a pass could create a better situation. Also it provides information, as in this project not only the situation but the players involved are studied, about which palyers should take which shots. It is commonly known that best players take more shots, but there are situations where a player which apparently is not that good is the best fit for that particular shot in that particular situation.
+Football is a very demanding sport, and the high impact that it has in society makes teams strive for perfection. From this point, game demands are extensively analysed and new concepts coming from data science are introduced to coaches plans. This project created a new metric called Scoring Probability, that uses Machine Learning models to predict goals from shots. Our model successfully predicts whether or not a shot will be converted to a goal by the shooter, by taking into account several spatial features along with more traditional variables and player ratings. We proposed several possible improvements and extensions to this project that can make it into a useful tool for football coaches.
 
-The algorithm, built on a simple logistic regression and only 25 relevant features classified the Scoring Probability with a combined precision and recall of 35.24% (F1-score), a recall of 23.72% and an accuracy of 85.89% improving the results of the xG study from statsBomb. This study tries to improve the football analysis comunity and football itself providing a tool to assess shooting scenarios in professional football. 
+The algorithm, built on a simple logistic regression and only 25 relevant features classified the Scoring Probability with a combined precision and recall of 35.24% (F1-score), a recall of 23.72% and an accuracy of 85.89% improving the results of the xG metric from StatsBomb. This study tries to improve the football analysis comunity and football itself providing a tool to assess shooting scenarios in professional football. 
+
+\newpage
 
 # References
 
