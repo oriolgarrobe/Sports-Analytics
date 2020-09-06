@@ -1,10 +1,15 @@
 ---
 title: "Predicting Goals in Football: Estimating the Probability of Scoring from Shots by FC Barcelona Players"
 author: "Oriol Garrobé and Dávid Hrabovszki"
-date: "06/09/2020"
+date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
-  pdf_document: default
-  html_document: default
+  pdf_document:
+    fig_caption: yes
+    includes:
+      in_header: my_header.tex
+  html_document:
+    df_print: paged
+header-includes: \usepackage{float}
 bibliography: bibliopaper.bib
 ---
 
@@ -84,16 +89,20 @@ It is important to emphasize on the fact that this dataset contains an extremely
 
 Finally, every data point from the *shots* dataset, containing also the geometric features computed, is complemented with information of the players. For instance, the ratings of the striker and the goalkeeper in action are added or whether the player shooting is using his preferred foot or not.
 
-Finally, some features from the **shots** dataset which are not relevant to study are removed, creating a dataset for analysis called **data** that will be the one used to train the models. The final features in the **data** dataset are:
+Finally, some features from the **shots** dataset which are not relevant to study are removed, creating a dataset for analysis called **data** that will be the one used to train the models. The final features in the **data** dataset can be seen in Table 1.
 
 
 ```{r echo = FALSE, eval = TRUE, message=FALSE, warning=FALSE}
 library(readxl)
 library(kableExtra)
 variables_defs <- read_xlsx('data/variables.xlsx', col_names = T)
-x <- kable(variables_defs, caption = "Variables from the dataset defined.")
-column_spec(x, column = 1, bold = T, width = "3cm")
+kable(variables_defs, caption = "Variables from the dataset defined.") %>%
+  column_spec(column = 1, width = "4cm") %>%
+  column_spec(column = 2, width = "10cm") %>%
+  kable_styling(latex_options = "hold_position")
 ```
+
+\newpage
 
 ### Feature engineering
 
@@ -230,7 +239,8 @@ load('dev/coeff.Rda')
 rownames(coeff) = NULL
 coeff$Coefficient = round(coeff$Coefficient,3)
 coeff = coeff %>% arrange(desc(Coefficient))
-kable(coeff, caption = "Estimated coefficients of significant features in logistic regression", label = 'coeff')
+kable(coeff, caption = "Estimated coefficients of significant features in logistic regression", label = 'coeff')  %>%
+  kable_styling(latex_options = "hold_position")
 
 ```
 
@@ -267,17 +277,21 @@ The KNN (K-Nearest Neighbours) model is a classification model that identifies t
 
 # Results
 
+The results are evaluated using the following metrics:
+
 * **Accuracy**. Stands for the ratio of correctly predicted observation over the total observations. If it is high it means that there are a lot of good predictions but it must be taken into account that for assymetric datasets or uneven classes - those where one class is larger than the other - it can be biased. In particular, in the dataset used there are much fewer shots that ended up being a goal than those that did not. So, with a naive predictor all the datapoints could have been set to not goal/miss and the accuracy would have been still high. That is, other metrics must be used in order to take this into account. 
 
 * **Recall**. Otherwise called sensitivity, stands for the correctly predicted positive observations to all observations in an actual class. This metric checks how many properly predicted points are predicted within a class, in this case **goal**. This means that it tries to show how many predicted goals are actually goals. Since in football there are not many goals, it is a very innacurate metric, as many times a situation that should clearly end up in goal in the end does not. This is why this one is not a very indicative metric for the purposes or the project. However, it is good to compute it in order to get some conclusions.
 
 * **F1-score**. This metric is a weighted average of precision and recall, being precision the number of properly predicted observations in a class over all the observations fom that class. From this point, it takes both false positives and false negatives into account too, it is very useful when the goal is to predict uneven classes. In this case, as there are much more observations that are not goal than those that are goal, this metric is the one that mirrors best the quality of the algorithm. 
 
+The results that the different algorithms yielded are in Table 3, along with the xG results for comparison.
+
 ```{r echo = FALSE, eval = TRUE}
 library(readxl)
 results <- read_xlsx('data/results.xlsx', col_names = T)
-x <- kable(results, caption = "Comparison of the models train to xG.",  )
-
+kable(results, caption = "Comparison of the models train to xG.",  ) %>%
+  kable_styling(latex_options = "hold_position")
 ```
 
 
@@ -309,7 +323,8 @@ table$actual_to_prediction_amount = round(table$actual_to_prediction_amount,2)
 table$diff_to_prediction_percent = round(table$diff_to_prediction_percent,2)
 
 colnames(table) <- c('Name', "Goals predicted (scaled up)", "Goals scored", "Diff. (amount)", "Diff. (ratio)")
-kable(table, caption = "Player performances (who scored more than 10 goals)", label = "players")
+kable(table, caption = "Player performances (who scored more than 10 goals)", label = "players") %>%
+  kable_styling(latex_options = "hold_position")
 ```
 
 The next section will present some shots visually that might help explain these differences.
