@@ -13,16 +13,16 @@ The project is mainly based on a dataset from [StatsBomb](https://statsbomb.com/
 
 Player skills are also considered, ratings of the shooters -which is the preferred foot of the player- and the opponent goalkeepers from FIFA sourced from [FIFAindex](https://www.fifaindex.com/).
 
-# Models Trained
+## Models Trained
 * Logistic Regression
 * Random Forest
 * Ada Boost
 * K-NN
 
-# Results
+## Results
 The best result was yielded by the Logistic Regression being an accuracy of 85.89%.
 
-# Prediction Examples
+## Prediction Examples
 Messi GOAL with a probability of scoring of 12%.
 
 ![Alt text](https://github.com/oriolgarrobe/Sports-Analytics/blob/master/img/messi_goal.JPG?raw=true)
