@@ -28,5 +28,6 @@ Messi GOAL with a probability of scoring of 12%.
 ![Alt text](https://github.com/oriolgarrobe/Sports-Analytics/blob/master/img/messi_goal.JPG?raw=true)
 
 Giuly MISS with a probability of scoring of 88.6%.
+
 ![Alt text](https://github.com/oriolgarrobe/Sports-Analytics/blob/master/img/giuly_miss.JPG?raw=true)
 
