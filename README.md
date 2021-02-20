@@ -23,5 +23,5 @@ Player skills are also considered, ratings of the shooters -which is the preferr
 The best result was yielded by the Logistic Regression being an accuracy of 85.89%.
 
 # Prediction Examples
-Messi Goal with a probability of scoring of 12%.
-![alt text](https://github.com/oriolgarrobe/Sports-Analytics/img/messi_goal.jpg?raw=true)
+
+![Messi Goal with a probability of scoring of 12%.](https://github.com/oriolgarrobe/Sports-Analytics/blob/master/img/messi_goal.JPG?raw=true)
