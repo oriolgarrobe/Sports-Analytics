@@ -9,5 +9,18 @@ This study intends to provide new information and hidden insights to professiona
 
 
 ## Dataset
-The project is mainly based on a dataset from StatsBomb[https://statsbomb.com/]
+The project is mainly based on a dataset from [StatsBomb](https://statsbomb.com/) which includes features such as: location of the players on the pitch in any shot - including he position and actions of the Goalkeeper-, detailed information on defensive players applying pressure on the player in possession, or which foot the player on possession uses.
+
+Player skills are also considered, ratings of the shooters -which is the preferred foot of the player- and the opponent goalkeepers from FIFA sourced from [FIFAindex](https://www.fifaindex.com/).
+
+# Models Trained
+* Logistic Regression
+* Random Forest
+* Ada Boost
+* K-NN
+
+# Results
+The best result was yielded by the Logistic Regression being an accuracy of 85.89%.
+
+# Prediction Examples
 
