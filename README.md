@@ -1,5 +1,7 @@
 # Predicting Goals in Football: Estimating the Probability of Scoring from Shots by FC Barcelona Players
 
+Click here to access the full report [:page_with_curl:](https://github.com/oriolgarrobe/Sports-Analytics/blob/master/Written-project.pdf)
+
 ## Abstract 
 The world is changing with the advance of technology and the vast amount of data available, and so does sport. Team sports such as football, are starting to introduce mathematical methods to analyse performances, recognize trends and patterns and predict results. The purpose of this study is to develop a new metric called Scoring Probability using machine learning models that is capable of predicting when a shot is going to end up being a goal. Scoring Probability is inspired by the Expected Goals metric.
 
